@@ -1,4 +1,5 @@
 const clockRoute = require("./clock")
+const minesweeperRoute = require("./minesweeper")
 const path = require('path')
 
 const constructorMethod = app => {
@@ -8,6 +9,7 @@ const constructorMethod = app => {
     })
   })
   app.use("/clock", clockRoute)
+  app.use("/minesweeper", minesweeperRoute)
   app.use("*", (req, res) => {
     res.status(404).json({ error: "Not found" })
   })
