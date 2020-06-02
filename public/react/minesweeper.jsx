@@ -4,11 +4,12 @@ class Box extends React.Component {
         let mineID = this.props.mineID
         let mineLocations = this.props.mineLocations
         let value = 0
+        //if the box does not contain a mine, the loops determine how many mines surround the box
         if (!mineLocations.includes(this.props.mineID)) {
             for (let i = -1; i < 2; i++) {
                 for (let j = -1; j < 2; j++) {
-                    //if the box is the rightmost box of a row, only its 5 neighbors are considered
-                    if (mineID % 9 !== 8 || mineID % 9 === 8 && j < 1) {
+                    //if the box is the rightmost or leftmost box of a row, only its 5 neighbors are considered
+                    if (!(mineID % 9 === 8 && j === 1) && !(mineID % 9 === 0 && j === -1)) {
                         let neighborID = mineID + (9*i + j)
                         if (mineLocations.includes(neighborID)) value++
                     }
@@ -46,7 +47,7 @@ class Box extends React.Component {
     render() {
         //id is the "number" of the box. First row starts at 0, second row at 9, third row at 18, etc. 
         return (
-        <button className="box" id={this.props.mineID} onClick={e => this.boxClick(this.state)}></button>
+        <button className="box" id={this.props.mineID} onClick={e => this.boxClick(this.state)}>{this.state.value}</button>
         )
     }
 }
