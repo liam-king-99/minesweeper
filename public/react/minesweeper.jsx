@@ -39,11 +39,6 @@ class Box extends React.Component {
         this.setState(() => ({
             clicked: true
         }))
-        if (e.isMine) {
-            alert("Mine")
-        } else {
-            alert(e.value)
-        }
     }
 
     render() {
