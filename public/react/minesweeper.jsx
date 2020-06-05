@@ -48,25 +48,38 @@ class Box extends React.Component {
         
     }
 
-
+    //called when a box is clicked
     boxClick(state, mouseButton) {
-        console.log(mouseButton)
         switch (mouseButton) {
             case 1:
+                //Left mouse button clicked
                 if (state.rightClicked) {
+                    //Changes the flagged box back to its initial state, updates how many mines are left by adding 1
                     this.setState(() => ({
                         rightClicked: false
                     }))
+                    this.props.updateMinesRemaining(-1)
                     break
                 } else {
+                    //Clears the box
                     this.setState(() => ({
                         leftClicked: true
                     }))
+                    if (state.value === null) {
+                        //Game ends if the box is a mine
+                        this.props.endGame()
+                    } else {
+                        //The box is not a mine, total boxes cleared increases by 1
+                        this.props.countBoxesCleared()
+                    }
                     break
                 }
                 
             case 3:
+                //Right mouse button clicked, updates how many mines are left by adding 1 to the total if a flag is removed, or subtracting one from the total if a flag is placed
+                state.rightClicked ? this.props.updateMinesRemaining(-1) : this.props.updateMinesRemaining(1)
                 this.setState(() => ({
+                    //Toggles the box between flagged and initial state
                     rightClicked: !state.rightClicked
                 }))
             default:
@@ -148,8 +161,40 @@ class Board extends React.Component {
         //For testing purposes
         console.log(mineIDs)
         this.state = {
-            mineLocations: mineIDs
+            mineLocations: mineIDs,
+            boxesCleared: 0,
+            minesRemaining: 10,
+            gameOver: false,
+            gameWin: false
         }
+    }
+
+    //Called every time a box that is not a mine is cleared
+    countBoxesCleared() {
+        this.setState((state) => ({
+            boxesCleared: (state.boxesCleared + 1)
+        }))
+        // If all the boxes that are not mines have been cleared, the game ends and the user is shown a congratulatory message
+        if (this.state.boxesCleared === 70) {
+            this.setState(() => ({
+                gameOver: true,
+                gameWin: true
+            }))
+        }
+    }
+
+    updateMinesRemaining(n) {
+        this.setState((state) => ({
+            minesRemaining: (state.minesRemaining - n)
+        }))
+    }
+
+    //Called when a mine is cleared. The user is shown a message indicating that the game has ended
+    endGame() {
+        this.setState(() => ({
+            gameOver: true,
+            gameWin: false
+        }))
     }
 
     createRow(rowNum) {
@@ -161,10 +206,22 @@ class Board extends React.Component {
 
         return (
             <div className="boxRow">
-                {boxRow.map(item => (<Box mineID={9*rowNum + item} mineLocations={this.state.mineLocations}/>))}
+                {boxRow.map(item => (<Box mineID={9*rowNum + item} mineLocations={this.state.mineLocations} countBoxesCleared={this.countBoxesCleared.bind(this)} endGame={this.endGame.bind(this)} updateMinesRemaining={this.updateMinesRemaining.bind(this)}/>))}
 
             </div>
         )
+    }
+
+    gameOverClick() {
+        if (this.state.gameOver) {
+            if (this.state.gameWin) {
+                alert("Congratulations!")
+                alert("Click OK to play again")
+            } else {
+                alert("Game over. Click OK to play again")
+            }
+            window.location.reload()
+        }
     }
 
     render() {
@@ -174,10 +231,23 @@ class Board extends React.Component {
             boxTable.push(i)
         }
 
+        if (this.state.gameOver) {
+            if (this.state.gameWin) {
+                let winningMessage = document.createElement("p")
+                winningMessage.innerHTML = "Congratulations!"
+                document.getElementById("boxTable").appendChild(winningMessage)
+            } else {
+                let losingMessage = document.createElement("p")
+                losingMessage.innerHTML = "Game Over"
+                document.getElementById("boxTable").appendChild(losingMessage)
+            }
+        }
+
         return (
-            <div className="boxTable">
+            <div className="boxTable" id="boxTable" onClick={this.gameOverClick.bind(this)}>
+                <p>{this.state.minesRemaining}</p>
                 {boxTable.map(item => (this.createRow(item)))}
-            </div>
+                </div>
         )
     }
 }
