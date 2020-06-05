@@ -16,18 +16,32 @@ class Box extends React.Component {
                 }
             }
 
-            //set state of a box that does not hold a mine
+            /*
+                Set state of a box that does not hold a mine
+                isMine: false -> box does not hold a mine
+                value -> represents how many mines are adjacent to the box
+                leftClicked -> will only be true if the box is not flagged when left clicked
+                rightClicked -> will only be true if the box is right clicked in its initial state
+            */
             this.state = {
                 isMine: false,
                 value: value,
-                clicked: false
+                leftClicked: false,
+                rightClicked: false
             }
         } else {
-            //set state of a box that does hold a mine
+            /*
+                Set state of a box that does not hold a mine
+                isMine: true -> box holds a mine
+                value -> null because the box is a mine
+                leftClicked -> will only be true if the box is not flagged when left clicked
+                rightClicked -> will only be true if the box is right clicked in its initial state
+            */
             this.state = {
                 isMine: true,
                 value: null,
-                clicked: false
+                leftClicked: false,
+                rightClicked: false
             }
         }
 
@@ -35,14 +49,34 @@ class Box extends React.Component {
     }
 
 
-    boxClick(e) {
-        this.setState(() => ({
-            clicked: true
-        }))
+    boxClick(state, mouseButton) {
+        console.log(mouseButton)
+        switch (mouseButton) {
+            case 1:
+                if (state.rightClicked) {
+                    this.setState(() => ({
+                        rightClicked: false
+                    }))
+                    break
+                } else {
+                    this.setState(() => ({
+                        leftClicked: true
+                    }))
+                    break
+                }
+                
+            case 3:
+                this.setState(() => ({
+                    rightClicked: !state.rightClicked
+                }))
+            default:
+                break
+        }
+
     }
 
     render() {
-        if (this.state.clicked) {
+        if (this.state.leftClicked) {
             switch (this.state.value) {
                 case 0:
                     return (
@@ -85,11 +119,15 @@ class Box extends React.Component {
                         <img src = '/public/images/Minesweeper_mine.png' alt = 'X'></img>
                     )
             }
+        } else if (this.state.rightClicked) {
+            return (
+                <img src = '/public/images/Minesweeper_flag.png' alt = 'F' onMouseDown={(e) => this.boxClick(this.state, event.which)}></img>
+            )  
         } else {
             return (
                 //id is the "number" of the box. First row starts at 0, second row at 9, third row at 18, etc. 
                 //<button className="box" id={this.props.mineID} onClick={e => this.boxClick(this.state)}></button>
-                <img src = 'public/images/Minesweeper_unopened_square.png' alt = '' onClick={(e) => this.boxClick(this.state)}></img>
+                <img src = 'public/images/Minesweeper_unopened_square.png' alt = '' onMouseDown={(e) => this.boxClick(this.state, event.which)}></img>
                 )
         }
         
