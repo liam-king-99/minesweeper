@@ -55,91 +55,80 @@ class Box extends React.Component {
     }
 
     /*
-        Takes in the state of a box and sends a left click to all of its neighbors
-        Effectively calls cascadeOnEmptyBoxNeighbor on all of the neighboring boxes
+        Calls clearEmptyBoxNeighbors on all of the neighboring boxes
         Didn't want to have this code in multiple places so I made it a function
     */
-    clickOnNeighbors(state) {
-            if (!state.leftClicked) {
-                state.neighborIDs.map(id => {
-                    if (document.getElementById(`${id}`)) {
-                        document.getElementById(`${id}`).click()
-                    }    
-                })
+    clickOnNeighbors() {
+        /*this.state.neighborIDs.map(id => {
+            if (document.getElementById(`${id}`)) {
+                console.log(`${this.props.mineID} clickOnNeighbors to ${id}`)
+                this.props.clearEmptyBoxNeighbors(id)   
             }
+        })*/
+        this.props.clearEmptyBoxNeighbors(this.state.neighborIDs)
+        
     }
-
-    // onClick function of each box, does not get triggered by mousedown
-    cascadeOnEmptyBoxNeighbor(state) {
-        if (!state.leftClicked) {
-            //removes flag from the box if it has been flagged by sending a right click to the box
-            if (state.rightClicked) {
-                let rightClick = new MouseEvent("contextmenu", {
-                    bubbles: true,
-                    cancelable: false,
-                    view: window,
-                    button: 2,
-                    buttons: 2
-                })
-                document.getElementById(this.props.mineID).dispatchEvent(rightClick)
-            } else {
-                //clears the box
-                this.setState((state) => ({
-                    leftClicked: true
-                }))
-
-                if (state.value !== null) {
-                    this.props.countBoxesCleared()
+        
+    // onDblClick function of each box, does not get triggered by click
+    cascadeOnEmptyBoxNeighbor() {
+        //Ignore boxes that are flagged
+        if (this.state.rightClicked) return
+        if (!this.state.leftClicked) {
+            //clears the box
+            this.setState(() => ({
+                leftClicked: true
+            }), () => {
+                if (this.state.value !== null) {
+                    this.props.countBoxesCleared(this.props.mineID)
                 }
                 //calls clickOnNeighbors to send a left click to all surrounding boxes if the box is empty
-                /*if (state.value === 0) {
-                    this.clickOnNeighbors(state)
-                }*/
-            }
+                if (this.state.value === 0) {
+                    this.clickOnNeighbors()
+                }
+            })
+            
         }
-        
-        
         
     }
 
-    boxMouseDown(state, mouseButton) {
-        switch (mouseButton) {
-            case 0:
+    // Called when an unopened box is right clicked
+    boxRightClick() {
+        //Right mouse button clicked, prevent context menu from showing
+        event.preventDefault()
+        //updates how many mines are left by adding 1 to the total if a flag is removed, or subtracting one from the total if a flag is placed
+        this.state.rightClicked ? this.props.updateMinesRemaining(-1) : this.props.updateMinesRemaining(1)
+        this.setState((state) => ({
+            //Toggles the box between flagged and initial state
+            rightClicked: !state.rightClicked
+        }))
+    }
+
+    // Called when an unopened box is left clicked
+    boxLeftClick() {
+        console.log(`${this.props.mineID} neighbors are ${this.state.neighborIDs} `)
                 //Left mouse button clicked
-                if (state.rightClicked) {
+                if (this.state.rightClicked) {
                     //Doesn't affect flagged box
-                    break
+                    return
                 } else {
                     //Clears the box
-                    this.setState((state) => ({
+                    this.setState(() => ({
                         leftClicked: true
-                    }))
-                    if (state.value === null) {
-                        //Game ends if the box is a mine
-                        this.props.endGame()
-                    } else {
-                        //The box is not a mine, total boxes cleared increases by 1
-                        this.props.countBoxesCleared()
-                        //DO THE CASCADE
-                        if (state.value === 0) {
-                            this.clickOnNeighbors(state)
+                    }), () => {
+                        if (this.state.value === null) {
+                            //Game ends if the box is a mine
+                            this.props.endGame()
                         }
-                    }
-                    break
+                        //The box is not a mine, total boxes cleared increases by 1
+                        this.props.countBoxesCleared(this.props.mineID)
+                        //DO THE CASCADE
+                        if (this.state.value === 0) {
+                            this.clickOnNeighbors(this.state)
+                        }
+                    })
                 }
-                
-            case 2:
-                //Right mouse button clicked, updates how many mines are left by adding 1 to the total if a flag is removed, or subtracting one from the total if a flag is placed
-                state.rightClicked ? this.props.updateMinesRemaining(-1) : this.props.updateMinesRemaining(1)
-                this.setState((state) => ({
-                    //Toggles the box between flagged and initial state
-                    rightClicked: !state.rightClicked
-                }))
-            default:
-                break
-        }
-
     }
+
 
     render() {
         if (this.state.leftClicked) {
@@ -187,12 +176,12 @@ class Box extends React.Component {
             }
         } else if (this.state.rightClicked) {
             return (
-                <img src = '/public/images/Minesweeper_flag.png' alt = 'F' className='box' id={this.props.mineID} onMouseDown={(e) => this.boxMouseDown(this.state, event.button)} onClick={(e) => this.cascadeOnEmptyBoxNeighbor(this.state)}></img>
+                <img src = '/public/images/Minesweeper_flag.png' alt = 'F' className='box' id={this.props.mineID} onContextMenu={this.boxRightClick.bind(this)} onDoubleClick={this.cascadeOnEmptyBoxNeighbor.bind(this)}></img>
                 //<img src = '/public/images/Minesweeper_flag.png' alt = 'F' id={this.props.mineID} onClick={(e) => this.boxClick(this.state, event.button)} onContextMenu={(e) => this.boxClick(this.state, event.button)}></img>
             )  
         } else {
             return (
-                <img src = 'public/images/Minesweeper_unopened_square.png' alt = '' className='box' id={this.props.mineID} onMouseDown={(e) => this.boxMouseDown(this.state, event.button)} onClick={(e) => this.cascadeOnEmptyBoxNeighbor(this.state)}></img>
+                <img src = 'public/images/Minesweeper_unopened_square.png' alt = '' className='box' id={this.props.mineID} onClick={this.boxLeftClick.bind(this)} onContextMenu={this.boxRightClick.bind(this)} onDoubleClick={this.cascadeOnEmptyBoxNeighbor.bind(this)}></img>
                 //<img src = '/public/images/Minesweeper_unopened_square.png' alt = '' id={this.props.mineID} onClick={(e) => this.boxClick(this.state, event.button)} onContextMenu={(e) => this.boxClick(this.state, event.button)}></img>
 
                 )
@@ -215,25 +204,31 @@ class Board extends React.Component {
         
         this.state = {
             mineLocations: mineIDs,
-            boxesCleared: 0,
             minesRemaining: 10,
             gameOver: false,
-            gameWin: false
+            gameWin: false,
+            boxesToClear: [],
+            idsCleared: []
         }
     }
 
     //Called every time a box that is not a mine is cleared
-    countBoxesCleared() {
-        this.setState((state) => ({
-            boxesCleared: (state.boxesCleared + 1)
-        }))
-        // If all the boxes that are not mines have been cleared, the game ends and the user is shown a congratulatory message
-        if (this.state.boxesCleared === 70) {
+    countBoxesCleared(id) {
+        if (!this.state.idsCleared.includes(id)) {
             this.setState((state) => ({
-                gameOver: true,
-                gameWin: true
-            }))
+                idsCleared: this.mergeWithoutDuplicates(state.idsCleared, [id])
+            }), () => {
+                console.log(`${this.state.idsCleared} are cleared`)
+                // If all the boxes that are not mines have been cleared, the game ends and the user is shown a congratulatory message
+                if (this.state.idsCleared.length === 70) {
+                    this.setState((state) => ({
+                        gameOver: true,
+                        gameWin: true
+                    }))
+                }
+            })
         }
+        
     }
 
     updateMinesRemaining(n) {
@@ -242,12 +237,60 @@ class Board extends React.Component {
         }))
     }
 
+    //Takes in 2 arrays and returns the union of the 2 arrays
+    //Gets used to add IDs to the boxes that the board has to clear while cascading
+    mergeWithoutDuplicates(arr1, arr2) {
+        let basket = []
+        let concatArr = arr1.concat(arr2)
+        for (let i = 0; i < concatArr.length; i++) {
+            if(!basket.includes(concatArr[i])) {
+                basket.push(concatArr[i])
+            }
+        }
+        return basket
+    }
+
+    clearEmptyBoxNeighbors(neighbors) {
+        console.log(neighbors)
+        this.setState(() => ({
+            boxesToClear: this.mergeWithoutDuplicates(this.state.boxesToClear, neighbors)
+        }), () => {
+            this.state.boxesToClear.map((idToClick) => {
+                if (document.getElementById(idToClick)) {
+                    let dblClick = new MouseEvent("dblclick", {
+                        bubbles: true,
+                        cancelable: true,
+                        view: window,
+                        button: 1,
+                        buttons: 1
+                    })
+                    document.getElementById(idToClick).dispatchEvent(dblClick)
+                    this.state.boxesToClear.splice(this.state.boxesToClear.indexOf(idToClick), 1)
+                }
+            })
+        })
+        
+
+        
+    }
+
     //Called when a mine is cleared
     endGame() {
-        this.setState((state) => ({
+        this.setState(() => ({
             gameOver: true,
             gameWin: false
-        }))
+        }), this.gameOverClick())
+    }
+
+    gameOverClick() {
+        if (this.state.gameOver) {
+            if (this.state.gameWin) {
+                alert("Congratulations!. Click OK to play again")
+            } else {
+                alert("Game over. Click OK to play again")
+            }
+            window.location.reload()
+        }
     }
 
     createRow(rowNum) {
@@ -259,22 +302,10 @@ class Board extends React.Component {
 
         return (
             <div className="boxRow">
-                {boxRow.map(item => (<Box mineID={9*rowNum + item} mineLocations={this.state.mineLocations} countBoxesCleared={this.countBoxesCleared.bind(this)} endGame={this.endGame.bind(this)} updateMinesRemaining={this.updateMinesRemaining.bind(this)}/>))}
+                {boxRow.map(item => (<Box mineID={9*rowNum + item} mineLocations={this.state.mineLocations} countBoxesCleared={this.countBoxesCleared.bind(this)} endGame={this.endGame.bind(this)} updateMinesRemaining={this.updateMinesRemaining.bind(this)} clearEmptyBoxNeighbors={this.clearEmptyBoxNeighbors.bind(this)}/>))}
 
             </div>
         )
-    }
-
-    gameOverClick() {
-        if (this.state.gameOver) {
-            if (this.state.gameWin) {
-                alert("Congratulations!")
-                alert("Click OK to play again")
-            } else {
-                alert("Game over. Click OK to play again")
-            }
-            window.location.reload()
-        }
     }
 
     render() {
@@ -296,4 +327,3 @@ class Board extends React.Component {
 }
 
 ReactDOM.render(<Board />, document.getElementById('gameBoard'))
-document.getElementById('boxTable').addEventListener('contextmenu', event => event.preventDefault())
