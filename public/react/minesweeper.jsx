@@ -75,7 +75,7 @@ class Box extends React.Component {
         if (this.state.rightClicked) return
         if (!this.state.leftClicked) {
             //clears the box
-            this.setState(() => ({
+            this.setState((state) => ({
                 leftClicked: true
             }), () => {
                 if (this.state.value !== null) {
@@ -105,16 +105,15 @@ class Box extends React.Component {
 
     // Called when an unopened box is left clicked
     boxLeftClick() {
-        console.log(`${this.props.mineID} neighbors are ${this.state.neighborIDs} `)
                 //Left mouse button clicked
                 if (this.state.rightClicked) {
                     //Doesn't affect flagged box
                     return
                 } else {
                     //Clears the box
-                    this.setState(() => ({
+                    this.setState((state) => ({
                         leftClicked: true
-                    }), () => {
+                    }), (state) => {
                         if (this.state.value === null) {
                             //Game ends if the box is a mine
                             this.props.endGame()
@@ -123,7 +122,7 @@ class Box extends React.Component {
                         this.props.countBoxesCleared(this.props.mineID)
                         //DO THE CASCADE
                         if (this.state.value === 0) {
-                            this.clickOnNeighbors(this.state)
+                            this.clickOnNeighbors()
                         }
                     })
                 }
@@ -218,10 +217,9 @@ class Board extends React.Component {
             this.setState((state) => ({
                 idsCleared: this.mergeWithoutDuplicates(state.idsCleared, [id])
             }), () => {
-                console.log(`${this.state.idsCleared} are cleared`)
                 // If all the boxes that are not mines have been cleared, the game ends and the user is shown a congratulatory message
                 if (this.state.idsCleared.length === 70) {
-                    this.setState((state) => ({
+                    this.setState(() => ({
                         gameOver: true,
                         gameWin: true
                     }))
@@ -251,9 +249,8 @@ class Board extends React.Component {
     }
 
     clearEmptyBoxNeighbors(neighbors) {
-        console.log(neighbors)
-        this.setState(() => ({
-            boxesToClear: this.mergeWithoutDuplicates(this.state.boxesToClear, neighbors)
+        this.setState((state) => ({
+            boxesToClear: this.mergeWithoutDuplicates(state.boxesToClear, neighbors)
         }), () => {
             this.state.boxesToClear.map((idToClick) => {
                 if (document.getElementById(idToClick)) {
@@ -285,7 +282,7 @@ class Board extends React.Component {
     gameOverClick() {
         if (this.state.gameOver) {
             if (this.state.gameWin) {
-                alert("Congratulations!. Click OK to play again")
+                alert("Congratulations! Click OK to play again")
             } else {
                 alert("Game over. Click OK to play again")
             }
