@@ -1,3 +1,70 @@
+class DifficultyForm extends React.Component {
+    constructor(props) {
+        super(props)
+
+        this.state = {
+            difficulty: null,
+            height: null,
+            width: null,
+            mines: null
+        }
+    }
+
+    createBoard(event) {
+        switch (event.target.value) {
+            case "Beginner":
+                this.setState({
+                    difficulty: "Beginner",
+                    height: 9,
+                    width: 9,
+                    mines: 10
+                })
+                break
+            case "Intermediate":
+                this.setState({
+                    difficulty: "Intermediate",
+                    height: 16,
+                    width: 16,
+                    mines: 40
+                })
+                break
+            case "Expert":
+                this.setState({
+                    difficulty: "Expert",
+                    height: 16,
+                    width: 30,
+                    mines: 99
+                })
+                break
+            default:
+                break
+        }
+    }
+
+    render() {
+        if (document.getElementById("boxTable")) {
+            let boxes = document.getElementById("boxTable")
+            boxes.innerHTML = ""
+        }
+        if (this.state.difficulty) {
+            return (
+                <div>
+                    <Board height={this.state.height} width={this.state.width} mines={this.state.mines} />
+                </div> 
+            )
+        }
+
+        return (
+          <form id="difficultyForm" onChange={this.createBoard.bind(this)}>
+          <p>Choose difficulty</p>
+          <input type='radio' name="gender" value="Beginner"/> Beginner <br></br>
+          <input type='radio' name="gender" value="Intermediate"/> Intermediate <br></br>
+          <input type='radio' name="gender" value="Expert"/> Expert <br></br>
+          </form>
+        );
+      }
+}
+
 class Box extends React.Component {
     constructor(props) {
         super(props)
@@ -10,10 +77,10 @@ class Box extends React.Component {
             for (let i = -1; i < 2; i++) {
                 for (let j = -1; j < 2; j++) {
                     //if the box is the rightmost or leftmost box of a row, only its 5 neighbors are considered
-                    if (!(mineID % 9 === 8 && j === 1) && !(mineID % 9 === 0 && j === -1)) {
-                        let neighborID = mineID + (9*i + j)
+                    if (!(mineID % this.props.width === (this.props.width - 1) && j === 1) && !(mineID % this.props.width === 0 && j === -1)) {
+                        let neighborID = mineID + (this.props.width*i + j)
                         //Add neighbor's ID to the box's neighbor ID array if the ID is valid and is not equal to the box in question
-                        if (neighborID !== mineID && neighborID >=0 && neighborID <= 80) neighborIDs.push(neighborID)
+                        if (neighborID !== mineID && neighborID >=0 && neighborID <= (this.props.width * this.props.height - 1)) neighborIDs.push(neighborID)
                         //Increment the value of mines adjacent to the box for each neighboring box that contains a mine
                         if (mineLocations.includes(neighborID)) value++
                     }
@@ -192,18 +259,18 @@ class Box extends React.Component {
 class Board extends React.Component {
     constructor(props) {
         super(props)
-        //mineIDs holds 10 unique random numbers from 0 to 80. These numbers represent the locations of the mines
+        //The length of mineIDs is determined by the difficulty chosen by the user. Each element is the location of a mine
         let mineIDs = []
         //10 is the number of mines
-        while(mineIDs.length < 10){
+        while(mineIDs.length < this.props.mines){
             //80 is length*width - 1
-            let mineID = Math.floor(Math.random() * 80);
+            let mineID = Math.floor(Math.random() * (this.props.height * this.props.width - 1));
             if(mineIDs.indexOf(mineID) === -1) mineIDs.push(mineID);
         }
         
         this.state = {
             mineLocations: mineIDs,
-            minesRemaining: 10,
+            minesRemaining: this.props.mines,
             gameOver: false,
             gameWin: false,
             boxesToClear: [],
@@ -218,7 +285,7 @@ class Board extends React.Component {
                 idsCleared: this.mergeWithoutDuplicates(state.idsCleared, [id])
             }), () => {
                 // If all the boxes that are not mines have been cleared, the game ends and the user is shown a congratulatory message
-                if (this.state.idsCleared.length === 70) {
+                if (this.state.idsCleared.length === (this.props.height * this.props.width - this.props.mines)) {
                     this.setState(() => ({
                         gameOver: true,
                         gameWin: true
@@ -276,46 +343,58 @@ class Board extends React.Component {
         this.setState(() => ({
             gameOver: true,
             gameWin: false
-        }), this.gameOverClick())
+        }))
     }
 
-    gameOverClick() {
+    isGameOver() {
         if (this.state.gameOver) {
             if (this.state.gameWin) {
                 alert("Congratulations! Click OK to play again")
             } else {
                 alert("Game over. Click OK to play again")
             }
-            window.location.reload()
+            this.setState({
+                gameOver: false,
+                gameWin: false
+            }, window.location.reload())
+            
         }
     }
 
     createRow(rowNum) {
         //returns a row of 9 boxes
         let boxRow = []
-        for (let i = 0; i < 9; i++) {
+        for (let i = 0; i < this.props.width; i++) {
             boxRow.push(i)
         }
 
         return (
             <div className="boxRow">
-                {boxRow.map(item => (<Box mineID={9*rowNum + item} mineLocations={this.state.mineLocations} countBoxesCleared={this.countBoxesCleared.bind(this)} endGame={this.endGame.bind(this)} updateMinesRemaining={this.updateMinesRemaining.bind(this)} clearEmptyBoxNeighbors={this.clearEmptyBoxNeighbors.bind(this)}/>))}
+                {boxRow.map(item => (<Box mineID={this.props.width*rowNum + item} mineLocations={this.state.mineLocations} height={this.props.height} width={this.props.width} countBoxesCleared={this.countBoxesCleared.bind(this)} endGame={this.endGame.bind(this)} updateMinesRemaining={this.updateMinesRemaining.bind(this)} clearEmptyBoxNeighbors={this.clearEmptyBoxNeighbors.bind(this)}/>))}
 
             </div>
         )
     }
 
+    componentDidMount() {
+        this.gameOverCheck = setInterval(() => this.isGameOver(), 400)
+    }
+
+    componentWillUnmount() {
+        clearInterval(this.gameOverCheck)
+    }
+
     render() {
         //returns a 9x9 board of boxes
         let boxTable = []
-        for (let i = 0; i < 9; i++) {
+        for (let i = 0; i < this.props.height; i++) {
             boxTable.push(i)
         }
 
         
 
         return (
-            <div className="boxTable" id="boxTable" onClick={this.gameOverClick.bind(this)}>
+            <div className="boxTable" id="boxTable">
                 <p>{this.state.minesRemaining}</p>
                 {boxTable.map(item => (this.createRow(item)))}
                 </div>
@@ -323,4 +402,4 @@ class Board extends React.Component {
     }
 }
 
-ReactDOM.render(<Board />, document.getElementById('gameBoard'))
+ReactDOM.render(<DifficultyForm />, document.getElementById('gameBoard'))
