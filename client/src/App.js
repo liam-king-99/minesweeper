@@ -1,31 +1,27 @@
-import './App.css';
-import { useEffect, useState } from 'react';
+import React from "react";
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+  Link
+} from "react-router-dom";
+import Board from "./Board";
 
-function App() {
-
-    const [users, setUsers] = useState([]);
-
-    const fetchUsers = async () => {
-        const response = await fetch('/users');
-        const data = await response.json();
-        setUsers(data)
-    }
-
-    useEffect(() =>
-    {
-        fetchUsers();
-    }, [])
-
-    return (
-    <div className="App">
-        <h1>Users</h1>
-        <ul>
-        {users.map((user, index) => {
-            return <li key={index}>{user.name}</li>
-        })}
-        </ul>
+export default function App() {
+  return (
+    <div>
+        <Router>
+            <div>
+                {/* A <Switch> looks through its children <Route>s and
+                    renders the first one that matches the current URL. */}
+                <Switch>
+                    <Route path="/board">
+                        <Board />
+                    </Route>
+                </Switch>
+            </div>
+        </Router>
+        <p>Hello</p>
     </div>
-    );
+  );
 }
-
-export default App;
