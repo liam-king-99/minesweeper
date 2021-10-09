@@ -21,7 +21,6 @@ export default function App() {
                 </Switch>
             </div>
         </Router>
-        <p>Hello</p>
     </div>
   );
 }

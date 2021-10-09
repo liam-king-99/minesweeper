@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import Box from './Box';
 
 function Board() {
 
@@ -19,10 +20,13 @@ function Board() {
     <div className="App">
         <h1>Users</h1>
         <ul>
-        {users.map((user, index) => {
-            return <li key={index}>{user.name}</li>
-        })}
+            {users.map((user) => (
+                <li>
+                    {JSON.stringify(user, null, 2)}
+                </li>
+                ))}
         </ul>
+        <Box />
     </div>
     );
 }
