@@ -17,7 +17,7 @@ function Box() {
     }, [])
 
     return (
-    <img src={facingDown}>
+    <img  onClick={() => alert("Click")} src={facingDown}>
     
     </img>
     );
