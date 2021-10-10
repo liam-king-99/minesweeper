@@ -22,7 +22,7 @@ function Board({width, height, totalNumberOfMines}: BoardProps) {
             const rowOfMines = [];
             for (let _width = 0; _width < Width; _width++)
             {
-                rowOfMines.push(<td><Box /></td>);
+                rowOfMines.push(<td id={`${_height*Height + _width}`}><Box /></td>);
             }
             gameBoard.push(<tr>{rowOfMines}</tr>);
         }
