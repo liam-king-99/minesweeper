@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import facingDown from './images/facingDown.png'
+import './Box.css'
 
 function Box() {
 
@@ -17,7 +18,7 @@ function Box() {
     }, [])
 
     return (
-    <img  onClick={() => alert("Click")} src={facingDown}>
+    <img className="box"  onClick={() => alert("Click")} src={facingDown}>
     
     </img>
     );
