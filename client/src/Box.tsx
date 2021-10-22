@@ -35,8 +35,9 @@ function Box({Id, IsMine, MineNeighbors, HandleBoardClick, Width, Height, ClickO
     const [mineNeighbors, setMineNeighbors] = useState(MineNeighbors);
 
     useEffect(() => {
-        setIsMine(IsMine)
-    }, [IsMine])
+        setIsMine(IsMine);
+        setMineNeighbors(MineNeighbors);
+    }, [IsMine, MineNeighbors])
 
     const handleClick = (id: string) => {
         setStatus(CLICKED);
