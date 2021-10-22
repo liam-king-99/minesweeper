@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import facingDown from './images/facingDown.png'
 import box0 from './images/box0.png'
 import box1 from './images/box1.png'
@@ -12,18 +12,66 @@ import box8 from './images/box8.png'
 import flagged from './images/flagged.png'
 import './Box.css'
 
-function Box() {
+type BoxProps = {
+    Id: string,
+    IsMine: boolean,
+    MineNeighbors: number,
+    HandleBoardClick: Function,
+    Width: number,
+    Height: number,
+    ClickOnBox: Function
+}
+
+function Box({Id, IsMine, MineNeighbors, HandleBoardClick, Width, Height, ClickOnBox}: BoxProps) {
 
     const UNCLICKED = 0;
     const CLICKED = 1;
     const FLAGGED = 2;
 
-    const [isMine, setIsMine] = useState(false);
-    const [status, setStatus] = useState(UNCLICKED);
-    const [mineNeighbors, setMineNeighbors] = useState(0);
+    const mouseClickEvents = ['mousedown'];
 
-    const handleClick = () => {
+    const [isMine, setIsMine] = useState(IsMine);
+    const [status, setStatus] = useState(UNCLICKED);
+    const [mineNeighbors, setMineNeighbors] = useState(MineNeighbors);
+
+    useEffect(() => {
+        setIsMine(IsMine)
+    }, [IsMine])
+
+    const handleClick = (id: string) => {
         setStatus(CLICKED);
+        if (isMine)
+        {
+            alert("Game over")
+            return
+        }
+        HandleBoardClick(id);
+        if (mineNeighbors === 0)
+        {
+            clickOnNeighbors(Number(id))
+        }
+    }
+
+    const handleDblClick = (id: string) => {
+        setStatus(CLICKED);
+        HandleBoardClick(id);
+        if (mineNeighbors === 0)
+        {
+            clickOnNeighbors(Number(id))
+        }
+    }
+
+    const clickOnNeighbors = (id: number) => {
+        for (let horizIter = -1; horizIter < 2; horizIter++)
+        {
+            for (let vertIter = -1; vertIter < 2; vertIter++)
+            {
+                const neighborId = id + (Width * horizIter) + vertIter;
+                const targetBox = document.getElementById(neighborId.toString()) as HTMLElement;
+                targetBox?.click()
+                ClickOnBox(neighborId.toString())
+            }
+        }
     }
 
     const handleRightClick = (event: React.MouseEvent) => {
@@ -42,7 +90,7 @@ function Box() {
     switch (status) {
         case UNCLICKED:
             return (
-                <img className="box"  onClick={handleClick} onContextMenu={handleRightClick} src={facingDown}></img>
+                <img className="box" id={Id} onClick={() => handleClick(Id)} onContextMenu={handleRightClick} onDoubleClick={() => handleDblClick(Id)} src={facingDown}></img>
                 );
         case CLICKED:
             switch (mineNeighbors) {
@@ -94,7 +142,7 @@ function Box() {
             }
         default:
             return (
-                <img className="box"  onClick={() => setStatus(UNCLICKED)} onContextMenu={handleRightClick} src={flagged}>
+                <img className="box" id={Id} onClick={() => setStatus(UNCLICKED)} onContextMenu={handleRightClick} src={flagged}>
                 </img>
                 );
     }
