@@ -10,6 +10,7 @@ import box6 from './images/box6.png'
 import box7 from './images/box7.png'
 import box8 from './images/box8.png'
 import flagged from './images/flagged.png'
+import bomb from './images/bomb.png'
 import './Box.css'
 
 type BoxProps = {
@@ -21,6 +22,18 @@ type BoxProps = {
     Height: number,
     ClickOnBox: Function
 }
+
+const MineNeighborImages = [
+    box0,
+    box1,
+    box2,
+    box3,
+    box4,
+    box5,
+    box6,
+    box7,
+    box8
+]
 
 function Box({Id, IsMine, MineNeighbors, HandleBoardClick, Width, Height, ClickOnBox}: BoxProps) {
 
@@ -94,6 +107,13 @@ function Box({Id, IsMine, MineNeighbors, HandleBoardClick, Width, Height, ClickO
                 <img className="box" id={Id} onClick={() => handleClick(Id)} onContextMenu={handleRightClick} onDoubleClick={() => handleDblClick(Id)} src={facingDown}></img>
                 );
         case CLICKED:
+            if (isMine)
+            {
+                return (
+                    <img className="box" src={bomb}>
+                    </img>
+                    );
+            }
             switch (mineNeighbors) {
                 case 0:
                     return (

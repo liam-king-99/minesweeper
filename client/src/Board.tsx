@@ -33,19 +33,104 @@ function Board({width, height, totalNumberOfMines}: BoardProps) {
 
     // Given an id, see how many mines are touching the box
     const countMineNeighbors = (id: number) => {
-        let mineNeighbors = 0;
-        for (let horizIter = -1; horizIter < 2; horizIter++)
+        let numberOfMineNeighbors = 0;
+        if (id === 450 || id === 451)
         {
-            for (let vertIter = -1; vertIter < 2; vertIter++)
+            console.log({id});
+        }
+        // Top row
+        if (id < width)
+        {
+            // Top left corner
+            if (id === 0)
             {
-                const neighborId = id + (Width * horizIter) + vertIter;
-                if ((MineLocations as string[]).includes(neighborId.toString()))
-                {
-                    mineNeighbors++;
-                }
+                if ((MineLocations as string[]).includes((id+1).toString())) numberOfMineNeighbors++;
+                if ((MineLocations as string[]).includes((id+width).toString())) numberOfMineNeighbors++;
+                if ((MineLocations as string[]).includes((id+width+1).toString())) numberOfMineNeighbors++;
+            }
+            // Top right corner
+            else if (id === width-1)
+            {
+                if ((MineLocations as string[]).includes((id-1).toString())) numberOfMineNeighbors++;
+                if ((MineLocations as string[]).includes((id+width).toString())) numberOfMineNeighbors++;
+                if ((MineLocations as string[]).includes((id+width-1).toString())) numberOfMineNeighbors++;
+            }
+            // Non-corner on top row
+            else
+            {
+                if ((MineLocations as string[]).includes((id-1).toString())) numberOfMineNeighbors++;
+                if ((MineLocations as string[]).includes((id+1).toString())) numberOfMineNeighbors++;
+                if ((MineLocations as string[]).includes((id+width).toString())) numberOfMineNeighbors++;
+                if ((MineLocations as string[]).includes((id+width-1).toString())) numberOfMineNeighbors++;
+                if ((MineLocations as string[]).includes((id+width+1).toString())) numberOfMineNeighbors++;
             }
         }
-        return mineNeighbors;
+        // Left side
+        else if (id % width === 0)
+        {
+            // Top left corner already handled
+            // Bottom left corner
+            if (id === width * height - width)
+            {
+                if ((MineLocations as string[]).includes((id+1).toString())) numberOfMineNeighbors++;
+                if ((MineLocations as string[]).includes((id-width).toString())) numberOfMineNeighbors++;
+                if ((MineLocations as string[]).includes((id-width+1).toString())) numberOfMineNeighbors++;
+            }
+            // Non-corner on left side
+            else
+            {
+                if ((MineLocations as string[]).includes((id+1).toString())) numberOfMineNeighbors++;
+                if ((MineLocations as string[]).includes((id+width).toString())) numberOfMineNeighbors++;
+                if ((MineLocations as string[]).includes((id-width).toString())) numberOfMineNeighbors++;
+                if ((MineLocations as string[]).includes((id+width+1).toString())) numberOfMineNeighbors++;
+                if ((MineLocations as string[]).includes((id-width+1).toString())) numberOfMineNeighbors++;
+            }
+        }
+        // Right side
+        else if (id % width === (width - 1))
+        {
+            // Top right corner already handled
+            // Bottom right corner
+            if (id === width * height - 1)
+            {
+                if ((MineLocations as string[]).includes((id-width).toString())) numberOfMineNeighbors++;
+                if ((MineLocations as string[]).includes((id-1).toString())) numberOfMineNeighbors++;
+                if ((MineLocations as string[]).includes((id-width-1).toString())) numberOfMineNeighbors++;
+            }
+            // Non-corner on right side
+            else
+            {
+                if ((MineLocations as string[]).includes((id-width).toString())) numberOfMineNeighbors++;
+                if ((MineLocations as string[]).includes((id+width).toString())) numberOfMineNeighbors++;
+                if ((MineLocations as string[]).includes((id-1).toString())) numberOfMineNeighbors++;
+                if ((MineLocations as string[]).includes((id-width-1).toString())) numberOfMineNeighbors++;
+                if ((MineLocations as string[]).includes((id+width-1).toString())) numberOfMineNeighbors++;
+            }
+        }
+        // Bottom row
+        else if (Math.floor(id / Width) === (Height - 1))
+        {
+            // Both corners on bottom row already handled
+            if ((MineLocations as string[]).includes((id-1).toString())) numberOfMineNeighbors++;
+            if ((MineLocations as string[]).includes((id+1).toString())) numberOfMineNeighbors++;
+            if ((MineLocations as string[]).includes((id-width).toString())) numberOfMineNeighbors++;
+            if ((MineLocations as string[]).includes((id-width-1).toString())) numberOfMineNeighbors++;
+            if ((MineLocations as string[]).includes((id-width+1).toString())) numberOfMineNeighbors++;
+        }
+        // Non-edge
+        else
+        {
+            if ((MineLocations as string[]).includes((id-width-1).toString())) numberOfMineNeighbors++;
+            if ((MineLocations as string[]).includes((id-width).toString())) numberOfMineNeighbors++;
+            if ((MineLocations as string[]).includes((id-width+1).toString())) numberOfMineNeighbors++;
+            if ((MineLocations as string[]).includes((id-1).toString())) numberOfMineNeighbors++;
+            if ((MineLocations as string[]).includes((id+1).toString())) numberOfMineNeighbors++;
+            if ((MineLocations as string[]).includes((id+width-1).toString())) numberOfMineNeighbors++;
+            if ((MineLocations as string[]).includes((id+width).toString())) numberOfMineNeighbors++;
+            if ((MineLocations as string[]).includes((id+width+1).toString())) numberOfMineNeighbors++;
+        }
+        
+        return numberOfMineNeighbors;
     }
 
     // Create a table that has height rows and width columns
@@ -59,7 +144,7 @@ function Board({width, height, totalNumberOfMines}: BoardProps) {
                 const rowOfMines = [];
                 for (let _width = 0; _width < Width; _width++)
                 {
-                    const boxId = `${_height*Height + _width}`;
+                    const boxId = `${_height*Width + _width}`;
                     rowOfMines.push(<td id={boxId}><Box Id={boxId} IsMine={false} MineNeighbors={0} HandleBoardClick={handleBoardClick} ClickOnBox={clickOnBox} Width={Width} Height={Height}/></td>);
                 }
                 gameBoard.push(<tr>{rowOfMines}</tr>);
@@ -89,7 +174,11 @@ function Board({width, height, totalNumberOfMines}: BoardProps) {
                 const rowOfMines = [];
                 for (let _width = 0; _width < Width; _width++)
                 {
-                    const boxId = `${_height*Height + _width}`;
+                    const boxId = `${_height*Width + _width}`;
+                    if (Number(boxId) === 450)
+                    {
+                        console.log({boxId});
+                    }
                     if ((MineLocations as string[]).includes(boxId))
                     {
                         rowOfMines.push(<td id={boxId}><Box Id={boxId} IsMine={true} MineNeighbors={countMineNeighbors(Number(boxId))} HandleBoardClick={handleBoardClick} ClickOnBox={clickOnBox} Width={Width} Height={Height}/></td>);
