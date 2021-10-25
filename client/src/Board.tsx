@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Box from './Box';
 
 type BoardProps = {
@@ -7,37 +7,54 @@ type BoardProps = {
     totalNumberOfMines: number
 }
 
+type NeighborsOfBox = {
+    [key: string]: number[]
+  };
+
 function Board({width, height, totalNumberOfMines}: BoardProps) {
+
+    const UNCLICKED = 0;
+    const CLICKED = 1;
+    const FLAGGED = 2;
 
     const [Width, setWidth] = useState(width);
     const [Height, setHeight] = useState(height);
     const [TotalNumberOfMines, setTotalNumberOfMines] = useState(totalNumberOfMines);
     const [TotalClicks, setTotalClicks] = useState(0);
-    // Keep track of which boxes have been opened
-    const [BoxesClicked, setBoxesClicked] = useState([]);
+    // Keep track of which boxes have been opened. 
+    const [BoxesClicked, setBoxesClicked] = useState<string[]>([]);
     const [MineLocations, setMineLocations] = useState([]);
+
+    // If a box doesn't touch any mines, it is elligible for cascading. Keep track of neighbors of boxes that don't touch any mines
+    const neighborsOfBoxById: NeighborsOfBox = {};
+
+    useEffect(() => {}, [BoxesClicked])
 
     // Update clicks and boxes that have been opened
     const handleBoardClick = (id: string) => {
-        let newBoxesClicked = BoxesClicked as string[];
+        let newBoxesClicked = BoxesClicked;
         newBoxesClicked.push(id);
-        setBoxesClicked(newBoxesClicked as never[]);
+        setBoxesClicked(newBoxesClicked);
         console.log(BoxesClicked)
         setTotalClicks(TotalClicks + 1);
     }
 
     const clickOnBox = (id: string) => {
-        const targetBox = document.getElementById(id);
-        targetBox?.click();
+        const newBoxesClicked = BoxesClicked;
+        newBoxesClicked.push(id);
+        setBoxesClicked(newBoxesClicked);
+        if (neighborsOfBoxById[id])
+        {
+            for (let neighbor of neighborsOfBoxById[id])
+            {
+                if (!BoxesClicked.includes(neighbor.toString())) clickOnBox(neighbor.toString());
+            }
+        }
     }
 
     // Given an id, see how many mines are touching the box
     const countMineNeighbors = (id: number) => {
         let numberOfMineNeighbors = 0;
-        if (id === 450 || id === 451)
-        {
-            console.log({id});
-        }
         // Top row
         if (id < width)
         {
@@ -47,6 +64,7 @@ function Board({width, height, totalNumberOfMines}: BoardProps) {
                 if ((MineLocations as string[]).includes((id+1).toString())) numberOfMineNeighbors++;
                 if ((MineLocations as string[]).includes((id+width).toString())) numberOfMineNeighbors++;
                 if ((MineLocations as string[]).includes((id+width+1).toString())) numberOfMineNeighbors++;
+                if (numberOfMineNeighbors === 0) neighborsOfBoxById[id.toString()] = [id+1, id+width, id+width+1];
             }
             // Top right corner
             else if (id === width-1)
@@ -54,6 +72,7 @@ function Board({width, height, totalNumberOfMines}: BoardProps) {
                 if ((MineLocations as string[]).includes((id-1).toString())) numberOfMineNeighbors++;
                 if ((MineLocations as string[]).includes((id+width).toString())) numberOfMineNeighbors++;
                 if ((MineLocations as string[]).includes((id+width-1).toString())) numberOfMineNeighbors++;
+                if (numberOfMineNeighbors === 0) neighborsOfBoxById[id.toString()] = [id-1, id+width, id+width-1];
             }
             // Non-corner on top row
             else
@@ -63,6 +82,7 @@ function Board({width, height, totalNumberOfMines}: BoardProps) {
                 if ((MineLocations as string[]).includes((id+width).toString())) numberOfMineNeighbors++;
                 if ((MineLocations as string[]).includes((id+width-1).toString())) numberOfMineNeighbors++;
                 if ((MineLocations as string[]).includes((id+width+1).toString())) numberOfMineNeighbors++;
+                if (numberOfMineNeighbors === 0) neighborsOfBoxById[id.toString()] = [id-1, id+1, id+width, id+width-1, id+width+1];
             }
         }
         // Left side
@@ -75,6 +95,7 @@ function Board({width, height, totalNumberOfMines}: BoardProps) {
                 if ((MineLocations as string[]).includes((id+1).toString())) numberOfMineNeighbors++;
                 if ((MineLocations as string[]).includes((id-width).toString())) numberOfMineNeighbors++;
                 if ((MineLocations as string[]).includes((id-width+1).toString())) numberOfMineNeighbors++;
+                if (numberOfMineNeighbors === 0) neighborsOfBoxById[id.toString()] = [id+1, id-width, id-width+1];
             }
             // Non-corner on left side
             else
@@ -84,6 +105,7 @@ function Board({width, height, totalNumberOfMines}: BoardProps) {
                 if ((MineLocations as string[]).includes((id-width).toString())) numberOfMineNeighbors++;
                 if ((MineLocations as string[]).includes((id+width+1).toString())) numberOfMineNeighbors++;
                 if ((MineLocations as string[]).includes((id-width+1).toString())) numberOfMineNeighbors++;
+                if (numberOfMineNeighbors === 0) neighborsOfBoxById[id.toString()] = [id+1, id+width, id-width, id+width+1, id-width+1];
             }
         }
         // Right side
@@ -96,6 +118,7 @@ function Board({width, height, totalNumberOfMines}: BoardProps) {
                 if ((MineLocations as string[]).includes((id-width).toString())) numberOfMineNeighbors++;
                 if ((MineLocations as string[]).includes((id-1).toString())) numberOfMineNeighbors++;
                 if ((MineLocations as string[]).includes((id-width-1).toString())) numberOfMineNeighbors++;
+                if (numberOfMineNeighbors === 0) neighborsOfBoxById[id.toString()] = [id-1, id-width, id-width-1];
             }
             // Non-corner on right side
             else
@@ -105,6 +128,7 @@ function Board({width, height, totalNumberOfMines}: BoardProps) {
                 if ((MineLocations as string[]).includes((id-1).toString())) numberOfMineNeighbors++;
                 if ((MineLocations as string[]).includes((id-width-1).toString())) numberOfMineNeighbors++;
                 if ((MineLocations as string[]).includes((id+width-1).toString())) numberOfMineNeighbors++;
+                if (numberOfMineNeighbors === 0) neighborsOfBoxById[id.toString()] = [id-1, id-width, id+width, id+width-1, id-width-1];
             }
         }
         // Bottom row
@@ -116,6 +140,7 @@ function Board({width, height, totalNumberOfMines}: BoardProps) {
             if ((MineLocations as string[]).includes((id-width).toString())) numberOfMineNeighbors++;
             if ((MineLocations as string[]).includes((id-width-1).toString())) numberOfMineNeighbors++;
             if ((MineLocations as string[]).includes((id-width+1).toString())) numberOfMineNeighbors++;
+            if (numberOfMineNeighbors === 0) neighborsOfBoxById[id.toString()] = [id-1, id+1, id-width, id-width-1, id-width+1];
         }
         // Non-edge
         else
@@ -128,6 +153,7 @@ function Board({width, height, totalNumberOfMines}: BoardProps) {
             if ((MineLocations as string[]).includes((id+width-1).toString())) numberOfMineNeighbors++;
             if ((MineLocations as string[]).includes((id+width).toString())) numberOfMineNeighbors++;
             if ((MineLocations as string[]).includes((id+width+1).toString())) numberOfMineNeighbors++;
+            if (numberOfMineNeighbors === 0) neighborsOfBoxById[id.toString()] = [id-1, id+1, id-width-1, id-width, id-width+1, id+width-1, id+width, id+width+1];
         }
         
         return numberOfMineNeighbors;
@@ -138,6 +164,7 @@ function Board({width, height, totalNumberOfMines}: BoardProps) {
     {
         if (TotalClicks === 0)
         {
+            const newMineArray = [];
             const gameBoard = [];
             for (let _height = 0; _height < Height; _height++)
             {
@@ -145,7 +172,7 @@ function Board({width, height, totalNumberOfMines}: BoardProps) {
                 for (let _width = 0; _width < Width; _width++)
                 {
                     const boxId = `${_height*Width + _width}`;
-                    rowOfMines.push(<td id={boxId}><Box Id={boxId} IsMine={false} MineNeighbors={0} HandleBoardClick={handleBoardClick} ClickOnBox={clickOnBox} Width={Width} Height={Height}/></td>);
+                    rowOfMines.push(<td id={boxId}><Box Id={boxId} IsMine={false} MineNeighbors={0} HandleBoardClick={handleBoardClick} ClickOnBox={clickOnBox} Width={Width} Height={Height} IsClicked={0}/></td>);
                 }
                 gameBoard.push(<tr>{rowOfMines}</tr>);
             }
@@ -175,18 +202,13 @@ function Board({width, height, totalNumberOfMines}: BoardProps) {
                 for (let _width = 0; _width < Width; _width++)
                 {
                     const boxId = `${_height*Width + _width}`;
-                    if (Number(boxId) === 450)
-                    {
-                        console.log({boxId});
-                    }
-                    if ((MineLocations as string[]).includes(boxId))
-                    {
-                        rowOfMines.push(<td id={boxId}><Box Id={boxId} IsMine={true} MineNeighbors={countMineNeighbors(Number(boxId))} HandleBoardClick={handleBoardClick} ClickOnBox={clickOnBox} Width={Width} Height={Height}/></td>);
-                    }
-                    else
-                    {
-                        rowOfMines.push(<td id={boxId}><Box Id={boxId} IsMine={false} MineNeighbors={countMineNeighbors(Number(boxId))} HandleBoardClick={handleBoardClick} ClickOnBox={clickOnBox} Width={Width} Height={Height}/></td>);
-                    }
+                    rowOfMines.push(<td id={boxId}>
+                                    <Box Id={boxId} IsMine={(MineLocations as string[]).includes(boxId)} 
+                                    MineNeighbors={countMineNeighbors(Number(boxId))} 
+                                    HandleBoardClick={handleBoardClick}
+                                    ClickOnBox={clickOnBox} Width={Width} Height={Height} IsClicked={BoxesClicked.includes(boxId) ? CLICKED : UNCLICKED}/>
+                                    </td>);
+                    
                 }
                 gameBoard.push(<tr>{rowOfMines}</tr>);
             }
@@ -201,14 +223,14 @@ function Board({width, height, totalNumberOfMines}: BoardProps) {
                 for (let _width = 0; _width < Width; _width++)
                 {
                     const boxId = `${_height*Height + _width}`;
-                    if ((MineLocations as string[]).includes(boxId))
-                    {
-                        rowOfMines.push(<td id={boxId}><Box Id={boxId} IsMine={true} MineNeighbors={countMineNeighbors(Number(boxId))} HandleBoardClick={handleBoardClick} ClickOnBox={clickOnBox} Width={Width} Height={Height}/></td>);
-                    }
-                    else
-                    {
-                        rowOfMines.push(<td id={boxId}><Box Id={boxId} IsMine={false} MineNeighbors={countMineNeighbors(Number(boxId))} HandleBoardClick={handleBoardClick} ClickOnBox={clickOnBox} Width={Width} Height={Height}/></td>);
-                    }
+                    rowOfMines.push(<td id={boxId}>
+                                    <Box Id={boxId} IsMine={(MineLocations as string[]).includes(boxId)} 
+                                    MineNeighbors={countMineNeighbors(Number(boxId))} 
+                                    HandleBoardClick={handleBoardClick} ClickOnBox={clickOnBox} 
+                                    Width={Width} Height={Height} 
+                                    IsClicked={BoxesClicked.includes(boxId) ? CLICKED : UNCLICKED}/>
+                                    </td>);
+                    
                 }
                 gameBoard.push(<tr>{rowOfMines}</tr>);
             }
