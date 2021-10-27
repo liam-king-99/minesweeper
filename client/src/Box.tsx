@@ -68,27 +68,6 @@ function Box({Id, IsMine, MineNeighbors, HandleBoardClick, Width, ClickOnBox, Is
         }
     }
 
-    const handleDblClick = (id: string) => {
-        setStatus(CLICKED);
-        HandleBoardClick(id);
-        if (mineNeighbors === 0)
-        {
-            clickOnNeighbors(Number(id))
-        }
-    }
-
-    const clickOnNeighbors = (id: number) => {
-        for (let horizIter = -1; horizIter < 2; horizIter++)
-        {
-            for (let vertIter = -1; vertIter < 2; vertIter++)
-            {
-                const neighborId = id + (Width * horizIter) + vertIter;
-                const targetBox = document.getElementById(neighborId.toString()) as HTMLElement;
-                targetBox?.click();
-            }
-        }
-    }
-
     const handleRightClick = (event: React.MouseEvent) => {
         event.preventDefault();
         if (status === UNCLICKED)
@@ -105,7 +84,7 @@ function Box({Id, IsMine, MineNeighbors, HandleBoardClick, Width, ClickOnBox, Is
     switch (status) {
         case UNCLICKED:
             return (
-                <img ref={boxRef} className="box" id={Id} onClick={() => handleClick(Id)} onContextMenu={handleRightClick} onDoubleClick={() => handleDblClick(Id)} src={facingDown}></img>
+                <img ref={boxRef} className="box" id={Id} onClick={() => handleClick(Id)} onContextMenu={handleRightClick} src={facingDown}></img>
                 );
         case CLICKED:
             if (isMine)
