@@ -21,7 +21,8 @@ type BoxProps = {
     Width: number,
     Height: number,
     ClickOnBox: Function,
-    IsClicked: number
+    IsClicked: number,
+    UpdateMinesRemaining: Function
 }
 
 const MineNeighborImages = [
@@ -36,7 +37,7 @@ const MineNeighborImages = [
     box8
 ]
 
-function Box({Id, IsMine, MineNeighbors, HandleBoardClick, Width, ClickOnBox, IsClicked}: BoxProps) {
+function Box({Id, IsMine, MineNeighbors, HandleBoardClick, Width, ClickOnBox, IsClicked, UpdateMinesRemaining}: BoxProps) {
 
     const UNCLICKED = 0;
     const CLICKED = 1;
@@ -70,10 +71,12 @@ function Box({Id, IsMine, MineNeighbors, HandleBoardClick, Width, ClickOnBox, Is
         if (status === UNCLICKED)
         {
             setStatus(FLAGGED);
+            UpdateMinesRemaining(-1);
         }
         else
         {
             setStatus(UNCLICKED);
+            UpdateMinesRemaining(1);
         }
         
     }

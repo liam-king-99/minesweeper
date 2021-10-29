@@ -24,11 +24,17 @@ function Board({width, height, totalNumberOfMines}: BoardProps) {
     // Keep track of which boxes have been opened. 
     const [BoxesClicked, setBoxesClicked] = useState<string[]>([]);
     const [MineLocations, setMineLocations] = useState([]);
+    const [MinesRemaining, setMinesRemaining] = useState(totalNumberOfMines);
 
     // If a box doesn't touch any mines, it is elligible for cascading. Keep track of neighbors of boxes that don't touch any mines
     //const neighborsOfBoxById: NeighborsOfBox = {};
     const [neighborsOfBoxById, setNeighborsOfBoxById] = useState<NeighborsOfBox>({})
 
+    const updateMinesRemaining = (delta: number) =>
+    {
+        const newMinesRemaining = MinesRemaining + delta;
+        setMinesRemaining(newMinesRemaining);
+    }
 
     // Update clicks and boxes that have been opened
     const handleBoardClick = (id: string) => {
@@ -57,8 +63,6 @@ function Board({width, height, totalNumberOfMines}: BoardProps) {
             newBoxesClicked.push(id);
             setBoxesClicked(newBoxesClicked);
         }
-        console.log(BoxesClicked.length);
-        console.log(`Target is ${Height*Width - TotalNumberOfMines}`)
         if (BoxesClicked.length === Height*Width - TotalNumberOfMines)
         {
             alert("Victory!");
@@ -229,7 +233,10 @@ function Board({width, height, totalNumberOfMines}: BoardProps) {
                 for (let _width = 0; _width < Width; _width++)
                 {
                     const boxId = `${_height*Width + _width}`;
-                    rowOfMines.push(<td id={boxId}><Box Id={boxId} IsMine={false} MineNeighbors={0} HandleBoardClick={handleBoardClick} ClickOnBox={clickOnBox} Width={Width} Height={Height} IsClicked={0}/></td>);
+                    rowOfMines.push(<td id={boxId}>
+                                    <Box Id={boxId} IsMine={false} MineNeighbors={0} 
+                                    HandleBoardClick={handleBoardClick} ClickOnBox={clickOnBox} 
+                                    Width={Width} Height={Height} IsClicked={0} UpdateMinesRemaining={updateMinesRemaining}/></td>);
                 }
                 gameBoard.push(<tr>{rowOfMines}</tr>);
             }
@@ -267,7 +274,8 @@ function Board({width, height, totalNumberOfMines}: BoardProps) {
                                     <Box Id={boxId} IsMine={(MineLocations as string[]).includes(boxId)} 
                                     MineNeighbors={countMineNeighbors(Number(boxId))} 
                                     HandleBoardClick={handleBoardClick}
-                                    ClickOnBox={clickOnBox} Width={Width} Height={Height} IsClicked={BoxesClicked.includes(boxId) ? CLICKED : UNCLICKED}/>
+                                    ClickOnBox={clickOnBox} Width={Width} Height={Height} 
+                                    IsClicked={BoxesClicked.includes(boxId) ? CLICKED : UNCLICKED} UpdateMinesRemaining={updateMinesRemaining}/>
                                     </td>);
                     
                 }
@@ -289,7 +297,7 @@ function Board({width, height, totalNumberOfMines}: BoardProps) {
                                     MineNeighbors={countMineNeighbors(Number(boxId))} 
                                     HandleBoardClick={handleBoardClick} ClickOnBox={clickOnBox} 
                                     Width={Width} Height={Height} 
-                                    IsClicked={BoxesClicked.includes(boxId) ? CLICKED : UNCLICKED}/>
+                                    IsClicked={BoxesClicked.includes(boxId) ? CLICKED : UNCLICKED} UpdateMinesRemaining={updateMinesRemaining}/>
                                     </td>);
                     
                 }
@@ -301,6 +309,7 @@ function Board({width, height, totalNumberOfMines}: BoardProps) {
 
     return (
     <div className="Board">
+        {Height ? <p>Mines Remaining: {MinesRemaining}</p> : <></>}
         {createBoard()}
     </div>
     );
