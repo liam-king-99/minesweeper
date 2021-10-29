@@ -62,10 +62,7 @@ function Box({Id, IsMine, MineNeighbors, HandleBoardClick, Width, ClickOnBox, Is
             return
         }
         HandleBoardClick(id);
-        if (mineNeighbors === 0)
-        {
-            ClickOnBox(id);
-        }
+        
     }
 
     const handleRightClick = (event: React.MouseEvent) => {

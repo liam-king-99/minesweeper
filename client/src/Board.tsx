@@ -1,5 +1,3 @@
-// FIX CASCADE ON FIRST CLICK
-
 import { useEffect, useState } from 'react';
 import Box from './Box';
 
@@ -31,15 +29,25 @@ function Board({width, height, totalNumberOfMines}: BoardProps) {
     //const neighborsOfBoxById: NeighborsOfBox = {};
     const [neighborsOfBoxById, setNeighborsOfBoxById] = useState<NeighborsOfBox>({})
 
-    useEffect(() => {}, [BoxesClicked])
 
     // Update clicks and boxes that have been opened
     const handleBoardClick = (id: string) => {
         let newBoxesClicked = BoxesClicked;
         newBoxesClicked.push(id);
         setBoxesClicked(newBoxesClicked);
-        console.log(BoxesClicked)
         setTotalClicks(TotalClicks + 1);
+        if (BoxesClicked.length === Height*Width - TotalNumberOfMines)
+        {
+            alert("Victory!");
+            return
+        }
+        if (neighborsOfBoxById[id])
+        {
+            for (let neighbor of neighborsOfBoxById[id])
+            {
+                if (!BoxesClicked.includes(neighbor.toString())) clickOnBox(neighbor.toString());
+            }
+        }
     }
 
     const clickOnBox = (id: string) => {
@@ -48,6 +56,13 @@ function Board({width, height, totalNumberOfMines}: BoardProps) {
             const newBoxesClicked = BoxesClicked;
             newBoxesClicked.push(id);
             setBoxesClicked(newBoxesClicked);
+        }
+        console.log(BoxesClicked.length);
+        console.log(`Target is ${Height*Width - TotalNumberOfMines}`)
+        if (BoxesClicked.length === Height*Width - TotalNumberOfMines)
+        {
+            alert("Victory!");
+            return
         }
         if (neighborsOfBoxById[id])
         {
