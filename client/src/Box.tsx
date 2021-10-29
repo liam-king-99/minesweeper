@@ -56,6 +56,12 @@ function Box({Id, IsMine, MineNeighbors, HandleBoardClick, Width, ClickOnBox, Is
     }, [IsMine, MineNeighbors, IsClicked])
 
     const handleClick = (id: string) => {
+        if (status === FLAGGED)
+        {
+            UpdateMinesRemaining(1);
+            setStatus(UNCLICKED);
+            return;
+        }
         setStatus(CLICKED);
         if (isMine)
         {
@@ -101,7 +107,7 @@ function Box({Id, IsMine, MineNeighbors, HandleBoardClick, Width, ClickOnBox, Is
             
         default:
             return (
-                <img className="box" id={Id} onClick={() => setStatus(UNCLICKED)} onContextMenu={handleRightClick} src={flagged}>
+                <img className="box" id={Id} onClick={() => handleClick(Id)} onContextMenu={handleRightClick} src={flagged}>
                 </img>
                 );
     }
