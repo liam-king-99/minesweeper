@@ -11,6 +11,12 @@ type NeighborsOfBox = {
     [key: string]: number[]
   };
 
+enum gameStatus {
+    LOST = -1,
+    IN_PROGRESS = 0,
+    WON = 1
+};
+
 function Board({width, height, totalNumberOfMines}: BoardProps) {
 
     const UNCLICKED = 0;
@@ -25,6 +31,7 @@ function Board({width, height, totalNumberOfMines}: BoardProps) {
     const [BoxesClicked, setBoxesClicked] = useState<string[]>([]);
     const [MineLocations, setMineLocations] = useState([]);
     const [MinesRemaining, setMinesRemaining] = useState(totalNumberOfMines);
+    const [gameResult, setGameResult] = useState(gameStatus.IN_PROGRESS);
 
     // If a box doesn't touch any mines, it is elligible for cascading. Keep track of neighbors of boxes that don't touch any mines
     //const neighborsOfBoxById: NeighborsOfBox = {};
@@ -36,22 +43,36 @@ function Board({width, height, totalNumberOfMines}: BoardProps) {
         setMinesRemaining(newMinesRemaining);
     }
 
+    // Called by a box if a mine is clicked on
+    const setGameLose = () => {
+        setGameResult(gameStatus.LOST);
+    }
+
+    // Called by a box to see if the game is over yet
+    const getGameResult = () => {
+        return gameResult;
+    }
+
     // Update clicks and boxes that have been opened
     const handleBoardClick = (id: string) => {
-        let newBoxesClicked = BoxesClicked;
-        newBoxesClicked.push(id);
-        setBoxesClicked(newBoxesClicked);
-        setTotalClicks(TotalClicks + 1);
-        if (BoxesClicked.length === Height*Width - TotalNumberOfMines)
+        if (gameResult === gameStatus.IN_PROGRESS)
         {
-            alert("Victory!");
-            return
-        }
-        if (neighborsOfBoxById[id])
-        {
-            for (let neighbor of neighborsOfBoxById[id])
+            let newBoxesClicked = BoxesClicked;
+            newBoxesClicked.push(id);
+            setBoxesClicked(newBoxesClicked);
+            setTotalClicks(TotalClicks + 1);
+            if (BoxesClicked.length === Height*Width - TotalNumberOfMines)
             {
-                if (!BoxesClicked.includes(neighbor.toString())) clickOnBox(neighbor.toString());
+                setGameResult(gameStatus.WON)
+                alert("Victory!");
+                return
+            }
+            if (neighborsOfBoxById[id])
+            {
+                for (let neighbor of neighborsOfBoxById[id])
+                {
+                    if (!BoxesClicked.includes(neighbor.toString())) clickOnBox(neighbor.toString());
+                }
             }
         }
     }
@@ -236,7 +257,9 @@ function Board({width, height, totalNumberOfMines}: BoardProps) {
                     rowOfMines.push(<td id={boxId}>
                                     <Box Id={boxId} IsMine={false} MineNeighbors={0} 
                                     HandleBoardClick={handleBoardClick} ClickOnBox={clickOnBox} 
-                                    Width={Width} Height={Height} IsClicked={0} UpdateMinesRemaining={updateMinesRemaining}/></td>);
+                                    Width={Width} Height={Height} IsClicked={0} 
+                                    UpdateMinesRemaining={updateMinesRemaining} SetGameLose={setGameLose}
+                                    GetGameResult={getGameResult}/></td>);
                 }
                 gameBoard.push(<tr>{rowOfMines}</tr>);
             }
@@ -275,7 +298,9 @@ function Board({width, height, totalNumberOfMines}: BoardProps) {
                                     MineNeighbors={countMineNeighbors(Number(boxId))} 
                                     HandleBoardClick={handleBoardClick}
                                     ClickOnBox={clickOnBox} Width={Width} Height={Height} 
-                                    IsClicked={BoxesClicked.includes(boxId) ? CLICKED : UNCLICKED} UpdateMinesRemaining={updateMinesRemaining}/>
+                                    IsClicked={BoxesClicked.includes(boxId) ? CLICKED : UNCLICKED} 
+                                    UpdateMinesRemaining={updateMinesRemaining} SetGameLose={setGameLose}
+                                    GetGameResult={getGameResult}/>
                                     </td>);
                     
                 }
@@ -297,7 +322,9 @@ function Board({width, height, totalNumberOfMines}: BoardProps) {
                                     MineNeighbors={countMineNeighbors(Number(boxId))} 
                                     HandleBoardClick={handleBoardClick} ClickOnBox={clickOnBox} 
                                     Width={Width} Height={Height} 
-                                    IsClicked={BoxesClicked.includes(boxId) ? CLICKED : UNCLICKED} UpdateMinesRemaining={updateMinesRemaining}/>
+                                    IsClicked={BoxesClicked.includes(boxId) ? CLICKED : UNCLICKED} 
+                                    UpdateMinesRemaining={updateMinesRemaining} SetGameLose={setGameLose}
+                                    GetGameResult={getGameResult}/>
                                     </td>);
                     
                 }

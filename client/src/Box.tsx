@@ -22,7 +22,9 @@ type BoxProps = {
     Height: number,
     ClickOnBox: Function,
     IsClicked: number,
-    UpdateMinesRemaining: Function
+    UpdateMinesRemaining: Function,
+    SetGameLose: Function,
+    GetGameResult: Function
 }
 
 const MineNeighborImages = [
@@ -37,7 +39,13 @@ const MineNeighborImages = [
     box8
 ]
 
-function Box({Id, IsMine, MineNeighbors, HandleBoardClick, Width, ClickOnBox, IsClicked, UpdateMinesRemaining}: BoxProps) {
+enum gameStatus {
+    LOST = -1,
+    IN_PROGRESS = 0,
+    WON = 1
+};
+
+function Box({Id, IsMine, MineNeighbors, HandleBoardClick, Width, ClickOnBox, IsClicked, UpdateMinesRemaining, SetGameLose, GetGameResult}: BoxProps) {
 
     const UNCLICKED = 0;
     const CLICKED = 1;
@@ -56,33 +64,40 @@ function Box({Id, IsMine, MineNeighbors, HandleBoardClick, Width, ClickOnBox, Is
     }, [IsMine, MineNeighbors, IsClicked])
 
     const handleClick = (id: string) => {
-        if (status === FLAGGED)
+        if (GetGameResult() === gameStatus.IN_PROGRESS)
         {
-            UpdateMinesRemaining(1);
-            setStatus(UNCLICKED);
-            return;
+            if (status === FLAGGED)
+            {
+                UpdateMinesRemaining(1);
+                setStatus(UNCLICKED);
+                return;
+            }
+            setStatus(CLICKED);
+            if (isMine)
+            {
+                SetGameLose();
+                alert("Game over")
+                return
+            }
+            HandleBoardClick(id);
         }
-        setStatus(CLICKED);
-        if (isMine)
-        {
-            alert("Game over")
-            return
-        }
-        HandleBoardClick(id);
         
     }
 
     const handleRightClick = (event: React.MouseEvent) => {
-        event.preventDefault();
-        if (status === UNCLICKED)
+        if (GetGameResult() === gameStatus.IN_PROGRESS)
         {
-            setStatus(FLAGGED);
-            UpdateMinesRemaining(-1);
-        }
-        else
-        {
-            setStatus(UNCLICKED);
-            UpdateMinesRemaining(1);
+            event.preventDefault();
+            if (status === UNCLICKED)
+            {
+                setStatus(FLAGGED);
+                UpdateMinesRemaining(-1);
+            }
+            else
+            {
+                setStatus(UNCLICKED);
+                UpdateMinesRemaining(1);
+            }
         }
         
     }
