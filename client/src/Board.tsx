@@ -282,7 +282,6 @@ function Board({width, height, totalNumberOfMines}: BoardProps) {
                     mineLocationIterator++;
                 }
             }
-            console.log(`Mines: ${MineLocations}`);
             if (BoxesClicked.length === 1)
             {
                 clickOnBox(BoxesClicked[0])
