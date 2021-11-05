@@ -37,29 +37,37 @@ function DifficultyForm() {
         }
     }
 
-    
-
-    return (
-        <div>
-            <form onChange={handleSubmit}>
-                <label>
-                Beginner (9x9)
-                <input type="radio" value="Beginner" name="difficulty" />
-                </label><br/>
-                <label>
-                Intermediate (16x16)
-                <input type="radio" value="Intermediate" name="difficulty"/>
-                </label>
-                <label><br/>
-                Expert (16x30)
-                <input type="radio" value="Expert" name="difficulty"/>
-                </label><br/>
-                <input type="submit" value="Reset" />
-            </form>
-            {width > 0 && <Board width={width} height={height} totalNumberOfMines={totalNumberOfMines}/>}
-        </div>
-        
-    );
+    if (width === 0)
+    {
+        return (
+            <div>
+                <form onChange={handleSubmit}>
+                    <label>
+                    Beginner (9x9, 10 mines)
+                    <input type="radio" value="Beginner" name="difficulty" />
+                    </label><br/>
+                    <label>
+                    Intermediate (16x16, 40 mines)
+                    <input type="radio" value="Intermediate" name="difficulty"/>
+                    </label>
+                    <label><br/>
+                    Expert (16x30, 99 mines)
+                    <input type="radio" value="Expert" name="difficulty"/>
+                    </label><br/>
+                    <input type="submit" value="Reset" />
+                </form>
+            </div>
+        );
+    }
+    else
+    {
+        return (
+            <div>
+                <button onClick={() => setWidth(0)}>Reset</button>
+                {<Board width={width} height={height} totalNumberOfMines={totalNumberOfMines}/>}
+            </div>
+        )
+    }
 }
 
 export default DifficultyForm;
