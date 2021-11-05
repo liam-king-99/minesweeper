@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import Box from './Box';
+import Time from './Time';
 
 type BoardProps = {
     width: number,
@@ -336,6 +337,7 @@ function Board({width, height, totalNumberOfMines}: BoardProps) {
 
     return (
     <div className="Board">
+        {<Time shouldDisplay={TotalClicks > 0} gameOver={gameResult !== gameStatus.IN_PROGRESS}/>}
         {Height ? <p>Mines Remaining: {MinesRemaining}</p> : <></>}
         {createBoard()}
     </div>
