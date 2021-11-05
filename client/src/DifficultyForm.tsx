@@ -54,7 +54,6 @@ function DifficultyForm() {
                     Expert (16x30, 99 mines)
                     <input type="radio" value="Expert" name="difficulty"/>
                     </label><br/>
-                    <input type="submit" value="Reset" />
                 </form>
             </div>
         );
