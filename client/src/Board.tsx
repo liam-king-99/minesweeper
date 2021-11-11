@@ -87,6 +87,7 @@ function Board({width, height, totalNumberOfMines}: BoardProps) {
         }
         if (BoxesClicked.length === Height*Width - TotalNumberOfMines)
         {
+            setGameResult(gameStatus.WON)
             alert("Victory!");
             return
         }
