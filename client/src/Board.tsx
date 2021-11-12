@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import Box from './Box';
 import Time from './Time';
+import './Board.css';
 
 type BoardProps = {
     width: number,
@@ -336,10 +337,16 @@ function Board({width, height, totalNumberOfMines}: BoardProps) {
     }
 
     return (
-    <div className="Board">
-        {<Time shouldDisplay={TotalClicks > 0} gameOver={gameResult !== gameStatus.IN_PROGRESS}/>}
-        {Height ? <p>Mines Remaining: {MinesRemaining}</p> : <></>}
-        {createBoard()}
+    <div className="Game">
+        <div id="MinesAndTime">
+            {Height ? <p className="MineCount">Mines Remaining: {MinesRemaining}</p> : <></>}
+            {Height ?  <Time shouldDisplay={TotalClicks > 0} gameOver={gameResult !== gameStatus.IN_PROGRESS}/> : <></>}
+        </div>
+        <div>
+            <table className="Table">
+                {createBoard()}
+            </table>
+        </div>
     </div>
     );
 }

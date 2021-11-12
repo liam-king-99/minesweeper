@@ -1,0 +1,16 @@
+.MineCount {
+    margin-left: 30%;
+}
+
+#MinesAndTime {
+    display: flex;
+    justify-content: space-between;
+}
+
+.Table {
+    margin: auto;
+}
+
+.Time {
+    margin-right: 30%;
+}

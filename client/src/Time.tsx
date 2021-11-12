@@ -17,7 +17,10 @@ const Time = ({shouldDisplay, gameOver}: Props) =>
     }, [shouldDisplay, gameOver])
 
     const updateTime = () => {
-        setSecondsPassed(secondsPassed + 1);
+        if (isTimeVisible)
+        {
+            setSecondsPassed(secondsPassed + 1);
+        }
     }
 
     if (!gameOver)
@@ -36,7 +39,7 @@ const Time = ({shouldDisplay, gameOver}: Props) =>
 
     if (isTimeVisible)
     {
-        return <p>{secondsPassedToTimeString()}</p>
+        return <p className="Time">{secondsPassedToTimeString()}</p>
     }
     
     return <></>
