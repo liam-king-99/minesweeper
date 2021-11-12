@@ -33,7 +33,7 @@ const Time = ({shouldDisplay, gameOver}: Props) =>
         const hours = Math.floor(secondsPassed / 3600);
         const minutes = Math.floor((secondsPassed - (3600 * hours)) / 60);
         const seconds = secondsPassed - (3600 * hours) - (60 * minutes);
-        return `${hours > 0 ? hours + ':' : ''}${hours > 0 ? (minutes > 9 ? minutes : `0${minutes}:`) : (minutes > 0 ? `${minutes}:` : '')}${minutes > 0 ? (seconds > 9 ? seconds : `0${seconds}`) : seconds}`
+        return `${hours > 0 ? hours + ':' : ''}${hours > 0 ? (minutes > 9 ? minutes : `0${minutes}:`) : (minutes > 0 ? `${minutes}:` : '0:')}${seconds > 9 ? seconds : `0${seconds}`}`
         // return `${secondsPassed}`
     }
 
