@@ -1,5 +1,6 @@
-import React, { FormEvent, useEffect, useState } from 'react';
+import React, { FormEvent, MouseEventHandler, useEffect, useState } from 'react';
 import Board from './Board';
+import './DifficultyForm.css';
 
 function DifficultyForm() {
 
@@ -11,20 +12,50 @@ function DifficultyForm() {
     const [height, setHeight] = useState(0);
     const [totalNumberOfMines, setTotalNumberOfMines] = useState(0);
 
-    const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
-        const difficultyValue = (event.nativeEvent.target as HTMLFormElement).value;
-        switch (difficultyValue) {
-            case "Beginner":
+    const handleButtonClick = (difficulty: any) => 
+    {
+        console.log({difficulty})
+        switch (difficulty) {
+            case "Beginner (9x9, 10 mines)":
                 setWidth(9);
                 setHeight(9);
                 setTotalNumberOfMines(10);
                 break;
-            case "Intermediate":
+            case "Intermediate (16x16, 40 mines)":
                 setWidth(16);
                 setHeight(16);
                 setTotalNumberOfMines(40);
                 break;
-            case "Expert":
+            case "Expert (16x30, 99 mines)":
+                setWidth(30);
+                setHeight(16);
+                setTotalNumberOfMines(99);
+                break;
+            default:
+                setWidth(0);
+                setHeight(0);
+                setTotalNumberOfMines(0);
+                break;
+        }
+    }
+
+    const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        event.stopPropagation();
+        const difficultyValue = (event.nativeEvent.target as HTMLFormElement).value;
+        console.log({difficultyValue})
+        switch (difficultyValue) {
+            case "Beginner (9x9, 10 mines)":
+                setWidth(9);
+                setHeight(9);
+                setTotalNumberOfMines(10);
+                break;
+            case "Intermediate (16x16, 40 mines)":
+                setWidth(16);
+                setHeight(16);
+                setTotalNumberOfMines(40);
+                break;
+            case "Expert (16x30, 99 mines)":
                 setWidth(30);
                 setHeight(16);
                 setTotalNumberOfMines(99);
@@ -41,18 +72,21 @@ function DifficultyForm() {
     {
         return (
             <div>
-                <form onChange={handleSubmit}>
+                <form id='DifficultyForm' onSubmit={handleSubmit}>
                     <label>
-                    Beginner (9x9, 10 mines)
-                    <input type="radio" value="Beginner" name="difficulty" />
+                    <input id='FormButton' type="submit" value="Beginner (9x9, 10 mines)" name="difficulty" onClick={() => {
+                        handleButtonClick("Beginner (9x9, 10 mines)")
+                    }}/>
                     </label><br/>
                     <label>
-                    Intermediate (16x16, 40 mines)
-                    <input type="radio" value="Intermediate" name="difficulty"/>
+                    <input id='FormButton' type="submit" value="Intermediate (16x16, 40 mines)" name="difficulty" onClick={() => {
+                        handleButtonClick("Intermediate (16x16, 40 mines)")
+                    }}/>
                     </label>
                     <label><br/>
-                    Expert (16x30, 99 mines)
-                    <input type="radio" value="Expert" name="difficulty"/>
+                    <input id='FormButton' type="submit" value="Expert (16x30, 99 mines)" name="difficulty" onClick={() => {
+                        handleButtonClick("Expert (16x30, 99 mines)")
+                    }}/>
                     </label><br/>
                 </form>
             </div>
