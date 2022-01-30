@@ -76,7 +76,7 @@ function Box({Id, IsMine, MineNeighbors, HandleBoardClick, Width, ClickOnBox, Is
             if (isMine)
             {
                 SetGameLose();
-                alert("Game over")
+                //alert("Game over")
                 return
             }
             HandleBoardClick(id);

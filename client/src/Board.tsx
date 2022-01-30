@@ -72,7 +72,7 @@ function Board({width, height, totalNumberOfMines}: BoardProps) {
             if (BoxesClicked.length === Height*Width - TotalNumberOfMines)
             {
                 setGameResult(gameStatus.WON)
-                alert("Victory!");
+                //alert("Victory!");
                 return
             }
             if (neighborsOfBoxById[id])
@@ -95,7 +95,7 @@ function Board({width, height, totalNumberOfMines}: BoardProps) {
         if (BoxesClicked.length === Height*Width - TotalNumberOfMines)
         {
             setGameResult(gameStatus.WON)
-            alert("Victory!");
+            //alert("Victory!");
             return
         }
         if (neighborsOfBoxById[id])
@@ -345,6 +345,7 @@ function Board({width, height, totalNumberOfMines}: BoardProps) {
 
     return (
     <div className="Game">
+        {gameResult === gameStatus.WON ? <h2>Victory</h2> : gameResult === gameStatus.LOST ? <h2>Defeat</h2> : <h2>In Progress</h2>}
         <div id="MinesAndTime">
             {Height ? <p className="MineCount">Mines Remaining: {MinesRemaining}</p> : <></>}
             {Height ?  <Time shouldDisplay={TotalClicks > 0} gameOver={gameResult !== gameStatus.IN_PROGRESS}/> : <></>}

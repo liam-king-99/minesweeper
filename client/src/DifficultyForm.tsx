@@ -73,21 +73,15 @@ function DifficultyForm() {
         return (
             <div>
                 <form id='DifficultyForm' onSubmit={handleSubmit}>
-                    <label>
                     <input id='FormButton' type="submit" value="Beginner (9x9, 10 mines)" name="difficulty" onClick={() => {
                         handleButtonClick("Beginner (9x9, 10 mines)")
-                    }}/>
-                    </label><br/>
-                    <label>
+                    }}/><br/><br/>
                     <input id='FormButton' type="submit" value="Intermediate (16x16, 40 mines)" name="difficulty" onClick={() => {
                         handleButtonClick("Intermediate (16x16, 40 mines)")
-                    }}/>
-                    </label>
-                    <label><br/>
+                    }}/><br/><br/>
                     <input id='FormButton' type="submit" value="Expert (16x30, 99 mines)" name="difficulty" onClick={() => {
                         handleButtonClick("Expert (16x30, 99 mines)")
-                    }}/>
-                    </label><br/>
+                    }}/><br/>
                 </form>
             </div>
         );
