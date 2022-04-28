@@ -2,10 +2,11 @@ import { useEffect, useState } from 'react';
 
 type Props = {
     shouldDisplay: boolean,
-    gameOver: boolean
+    gameOver: boolean,
+    Width: number
 }
 
-const Time = ({shouldDisplay, gameOver}: Props) => 
+const Time = ({shouldDisplay, gameOver, Width}: Props) => 
 {
     const [isTimeVisible, setIsTimeVisible] = useState(shouldDisplay);
     const [isGameOver, setIsGameOver] = useState(false);
@@ -39,7 +40,7 @@ const Time = ({shouldDisplay, gameOver}: Props) =>
 
     if (isTimeVisible)
     {
-        return <p className="Time">{secondsPassedToTimeString()}</p>
+        return <p className="Time" style={{marginRight: Width === 9 ? '40%' : Width === 16 ? '30%' : '15%'}}>{secondsPassedToTimeString()}</p>
     }
     
     return <></>

@@ -346,9 +346,9 @@ function Board({width, height, totalNumberOfMines}: BoardProps) {
     return (
     <div className="Game">
         {gameResult === gameStatus.WON ? <h2>Victory</h2> : gameResult === gameStatus.LOST ? <h2>Defeat</h2> : <h2>In Progress</h2>}
-        <div id="MinesAndTime">
-            {Height ? <p className="MineCount">Mines Remaining: {MinesRemaining}</p> : <></>}
-            {Height ?  <Time shouldDisplay={TotalClicks > 0} gameOver={gameResult !== gameStatus.IN_PROGRESS}/> : <></>}
+        <div id="MinesAndTime" style={{display: 'flex', justifyContent: 'space-between'}}>
+            {Height ? <p className="MineCount" style={{marginLeft: Width === 9 ? '38%' : Width === 16 ? '29%' : '10%'}}>Mines Remaining: {MinesRemaining}</p> : <></>}
+            {Height ?  <Time shouldDisplay={TotalClicks > 0} gameOver={gameResult !== gameStatus.IN_PROGRESS} Width={Width}/> : <></>}
         </div>
         <div>
             <table className="Table">
