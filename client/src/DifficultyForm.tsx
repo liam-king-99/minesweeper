@@ -90,7 +90,7 @@ function DifficultyForm() {
     {
         return (
             <div>
-                <button onClick={() => setWidth(0)}>Reset</button>
+                <button className='homeButton' onClick={() => setWidth(0)}>Home</button>
                 {<Board width={width} height={height} totalNumberOfMines={totalNumberOfMines}/>}
             </div>
         )

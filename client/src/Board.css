@@ -1,5 +1,5 @@
-.MineCount {
-    margin-left: 30%;
+.centeredText {
+    text-align: center;
 }
 
 #MinesAndTime {
@@ -9,8 +9,4 @@
 
 .Table {
     margin: auto;
-}
-
-.Time {
-    margin-right: 30%;
 }

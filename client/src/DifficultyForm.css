@@ -27,3 +27,7 @@
 	display: inline-block;
 	font-size: 150%;
 }
+
+.homeButton {
+	margin-left: 50%;
+}
