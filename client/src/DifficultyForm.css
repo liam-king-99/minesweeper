@@ -1,0 +1,33 @@
+#DifficultyForm {
+	text-align: center;
+}
+
+#FormButton {
+	height: 40%;
+	width: 30%;
+	background-color: #4CAF50; /* Green */
+	border: none;
+	color: white;
+	padding: 1%;
+	text-align: center;
+	text-decoration: none;
+	display: inline-block;
+	font-size: 150%;
+}
+
+#FormButton:hover {
+	height: 40%;
+	width: 30%;
+	background-color: #196e1c; /* Green */
+	border: none;
+	color: white;
+	padding: 1%;
+	text-align: center;
+	text-decoration: none;
+	display: inline-block;
+	font-size: 150%;
+}
+
+.homeButton {
+	margin-left: 50%;
+}
