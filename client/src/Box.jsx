@@ -13,19 +13,6 @@ import flagged from './images/flagged.png'
 import bomb from './images/bomb.png'
 import './Box.css'
 
-type BoxProps = {
-    Id: string,
-    IsMine: boolean,
-    MineNeighbors: number,
-    HandleBoardClick: Function,
-    Width: number,
-    Height: number,
-    ClickOnBox: Function,
-    IsClicked: number,
-    UpdateMinesRemaining: Function,
-    SetGameLose: Function,
-    GetGameResult: Function
-}
 
 const MineNeighborImages = [
     box0,
@@ -39,13 +26,13 @@ const MineNeighborImages = [
     box8
 ]
 
-enum gameStatus {
-    LOST = -1,
-    IN_PROGRESS = 0,
-    WON = 1
+const gameStatus = {
+    LOST: -1,
+    IN_PROGRESS: 0,
+    WON: 1
 };
 
-function Box({Id, IsMine, MineNeighbors, HandleBoardClick, Width, ClickOnBox, IsClicked, UpdateMinesRemaining, SetGameLose, GetGameResult}: BoxProps) {
+function Box({Id, IsMine, MineNeighbors, HandleBoardClick, Width, ClickOnBox, IsClicked, UpdateMinesRemaining, SetGameLose, GetGameResult}) {
 
     const UNCLICKED = 0;
     const CLICKED = 1;
@@ -63,7 +50,7 @@ function Box({Id, IsMine, MineNeighbors, HandleBoardClick, Width, ClickOnBox, Is
         setStatus(IsClicked)
     }, [IsMine, MineNeighbors, IsClicked])
 
-    const handleClick = (id: string) => {
+    const handleClick = (id) => {
         if (GetGameResult() === gameStatus.IN_PROGRESS)
         {
             if (status === FLAGGED)
@@ -84,7 +71,7 @@ function Box({Id, IsMine, MineNeighbors, HandleBoardClick, Width, ClickOnBox, Is
         
     }
 
-    const handleRightClick = (event: React.MouseEvent) => {
+    const handleRightClick = (event) => {
         if (GetGameResult() === gameStatus.IN_PROGRESS)
         {
             event.preventDefault();

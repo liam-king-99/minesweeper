@@ -1,12 +1,7 @@
 import { useEffect, useState } from 'react';
 
-type Props = {
-    shouldDisplay: boolean,
-    gameOver: boolean,
-    Width: number
-}
 
-const Time = ({shouldDisplay, gameOver, Width}: Props) => 
+const Time = ({shouldDisplay, gameOver, Width}) => 
 {
     const [isTimeVisible, setIsTimeVisible] = useState(shouldDisplay);
     const [isGameOver, setIsGameOver] = useState(false);

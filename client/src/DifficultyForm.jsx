@@ -12,7 +12,7 @@ function DifficultyForm() {
     const [height, setHeight] = useState(0);
     const [totalNumberOfMines, setTotalNumberOfMines] = useState(0);
 
-    const handleButtonClick = (difficulty: any) => 
+    const handleButtonClick = (difficulty) => 
     {
         console.log({difficulty})
         switch (difficulty) {
@@ -39,10 +39,10 @@ function DifficultyForm() {
         }
     }
 
-    const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+    const handleSubmit = (event) => {
         event.preventDefault();
         event.stopPropagation();
-        const difficultyValue = (event.nativeEvent.target as HTMLFormElement).value;
+        const difficultyValue = (event.nativeEvent.target).value;
         console.log({difficultyValue})
         switch (difficultyValue) {
             case "Beginner (9x9, 10 mines)":
