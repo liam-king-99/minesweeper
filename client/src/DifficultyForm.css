@@ -1,10 +1,12 @@
 #DifficultyForm {
+	display: grid;
+	grid-template-columns: 450px;
+	grid-template-rows: repeat(3, 80px);
+	row-gap: 16px;
 	text-align: center;
 }
 
 #FormButton {
-	height: 40%;
-	width: 30%;
 	background-color: #4CAF50; /* Green */
 	border: none;
 	color: white;
@@ -16,8 +18,6 @@
 }
 
 #FormButton:hover {
-	height: 40%;
-	width: 30%;
 	background-color: #196e1c; /* Green */
 	border: none;
 	color: white;
@@ -28,6 +28,9 @@
 	font-size: 150%;
 }
 
-.homeButton {
-	margin-left: 50%;
+
+.difficulty-form-root {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
 }

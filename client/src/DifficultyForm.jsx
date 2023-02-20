@@ -71,17 +71,17 @@ function DifficultyForm() {
     if (width === 0)
     {
         return (
-            <div>
+            <div className='difficulty-form-root'>
                 <form id='DifficultyForm' onSubmit={handleSubmit}>
                     <input id='FormButton' type="submit" value="Beginner (9x9, 10 mines)" name="difficulty" onClick={() => {
                         handleButtonClick("Beginner (9x9, 10 mines)")
-                    }}/><br/><br/>
+                    }}/>
                     <input id='FormButton' type="submit" value="Intermediate (16x16, 40 mines)" name="difficulty" onClick={() => {
                         handleButtonClick("Intermediate (16x16, 40 mines)")
-                    }}/><br/><br/>
+                    }}/>
                     <input id='FormButton' type="submit" value="Expert (16x30, 99 mines)" name="difficulty" onClick={() => {
                         handleButtonClick("Expert (16x30, 99 mines)")
-                    }}/><br/>
+                    }}/>
                 </form>
             </div>
         );
@@ -89,7 +89,7 @@ function DifficultyForm() {
     else
     {
         return (
-            <div>
+            <div className='difficulty-form-root'>
                 <button className='homeButton' onClick={() => setWidth(0)}>Home</button>
                 {<Board width={width} height={height} totalNumberOfMines={totalNumberOfMines}/>}
             </div>

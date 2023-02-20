@@ -332,11 +332,11 @@ function Board({width, height, totalNumberOfMines}) {
     return (
     <div className="Game">
         <div id="MinesAndTime" style={{display: 'flex', justifyContent: 'space-between'}}>
-            {Height ? <p className="MineCount" style={{marginLeft: Width === 9 ? '40%' : Width === 16 ? '33%' : '19%'}}>Mines Remaining: {MinesRemaining}</p> : <></>}
+            {Height ? <p className="MineCount">🚩 {MinesRemaining}</p> : <></>}
             {Height ?  <Time shouldDisplay={TotalClicks > 0} gameOver={gameResult !== gameStatus.IN_PROGRESS} Width={Width}/> : <></>}
         </div>
         <div>
-            <div className="Table" style={{display: 'grid', gridTemplateColumns: `repeat(${Width}, 35px)`, gridTemplateRows: `repeat(${Height}, 35px)`}}>
+            <div className="Table" style={{display: 'grid', gridTemplateColumns: `repeat(${Width}, 40px)`, gridTemplateRows: `repeat(${Height}, 40px)`}}>
                 {createBoard()}
             </div>
         </div>
