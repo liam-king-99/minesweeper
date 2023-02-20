@@ -333,7 +333,7 @@ function Board({width, height, totalNumberOfMines}) {
     <div className="Game">
         <div id="MinesAndTime" style={{display: 'flex', justifyContent: 'space-between'}}>
             {Height ? <p className="MineCount">🚩 {MinesRemaining}</p> : <></>}
-            {Height ?  <Time shouldDisplay={TotalClicks > 0} gameOver={gameResult !== gameStatus.IN_PROGRESS} Width={Width}/> : <></>}
+            {Height ?  <Time gameStarted={TotalClicks > 0} gameOver={gameResult !== gameStatus.IN_PROGRESS}/> : <></>}
         </div>
         <div>
             <div className="Table" style={{display: 'grid', gridTemplateColumns: `repeat(${Width}, 40px)`, gridTemplateRows: `repeat(${Height}, 40px)`}}>
