@@ -252,18 +252,16 @@ function Board({width, height, totalNumberOfMines}) {
             const gameBoard = [];
             for (let _height = 0; _height < Height; _height++)
             {
-                const rowOfMines = [];
                 for (let _width = 0; _width < Width; _width++)
                 {
                     const boxId = `${_height*Width + _width}`;
-                    rowOfMines.push(<td id={boxId}>
+                    gameBoard.push(<div id={boxId}>
                                     <Box Id={boxId} IsMine={false} MineNeighbors={0} 
                                     HandleBoardClick={handleBoardClick} ClickOnBox={clickOnBox} 
                                     Width={Width} Height={Height} IsClicked={0} 
                                     UpdateMinesRemaining={updateMinesRemaining} SetGameLose={setGameLose}
-                                    GetGameResult={getGameResult}/></td>);
+                                    GetGameResult={getGameResult}/></div>);
                 }
-                gameBoard.push(<tr>{rowOfMines}</tr>);
             }
             return gameBoard;
         }
@@ -290,11 +288,10 @@ function Board({width, height, totalNumberOfMines}) {
             const gameBoard = [];
             for (let _height = 0; _height < Height; _height++)
             {
-                const rowOfMines = [];
                 for (let _width = 0; _width < Width; _width++)
                 {
                     const boxId = `${_height*Width + _width}`;
-                    rowOfMines.push(<td id={boxId}>
+                    gameBoard.push(<div id={boxId}>
                                     <Box Id={boxId} IsMine={(MineLocations).includes(boxId)} 
                                     MineNeighbors={countMineNeighbors(Number(boxId))} 
                                     HandleBoardClick={handleBoardClick}
@@ -302,10 +299,9 @@ function Board({width, height, totalNumberOfMines}) {
                                     IsClicked={BoxesClicked.includes(boxId) ? CLICKED : UNCLICKED} 
                                     UpdateMinesRemaining={updateMinesRemaining} SetGameLose={setGameLose}
                                     GetGameResult={getGameResult}/>
-                                    </td>);
+                                    </div>);
                     
                 }
-                gameBoard.push(<tr>{rowOfMines}</tr>);
             }
             return gameBoard;
         }
@@ -314,11 +310,10 @@ function Board({width, height, totalNumberOfMines}) {
             const gameBoard = [];
             for (let _height = 0; _height < Height; _height++)
             {
-                const rowOfMines = [];
                 for (let _width = 0; _width < Width; _width++)
                 {
                     const boxId = `${_height*Width + _width}`;
-                    rowOfMines.push(<td id={boxId}>
+                    gameBoard.push(<div id={boxId}>
                                     <Box Id={boxId} IsMine={(MineLocations).includes(boxId)} 
                                     MineNeighbors={numberOfMineNeighborsByBoxId[boxId]} 
                                     HandleBoardClick={handleBoardClick} ClickOnBox={clickOnBox} 
@@ -326,10 +321,9 @@ function Board({width, height, totalNumberOfMines}) {
                                     IsClicked={BoxesClicked.includes(boxId) ? CLICKED : UNCLICKED} 
                                     UpdateMinesRemaining={updateMinesRemaining} SetGameLose={setGameLose}
                                     GetGameResult={getGameResult}/>
-                                    </td>);
+                                    </div>);
                     
                 }
-                gameBoard.push(<tr>{rowOfMines}</tr>);
             }
             return gameBoard
         }
@@ -342,9 +336,9 @@ function Board({width, height, totalNumberOfMines}) {
             {Height ?  <Time shouldDisplay={TotalClicks > 0} gameOver={gameResult !== gameStatus.IN_PROGRESS} Width={Width}/> : <></>}
         </div>
         <div>
-            <table className="Table">
+            <div className="Table" style={{display: 'grid', gridTemplateColumns: `repeat(${Width}, 35px)`, gridTemplateRows: `repeat(${Height}, 35px)`}}>
                 {createBoard()}
-            </table>
+            </div>
         </div>
         {gameResult === gameStatus.WON ? <h2 className='centeredText'>Victory</h2> : gameResult === gameStatus.LOST ? <h2 className='centeredText'>Defeat</h2> : <></>}
     </div>
