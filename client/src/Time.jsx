@@ -1,32 +1,25 @@
 import { useEffect, useState } from 'react';
 
 
-const Time = ({shouldDisplay, gameOver, Width}) => 
+const Time = ({gameStarted, gameOver}) => 
 {
-    const [isTimeVisible, setIsTimeVisible] = useState(shouldDisplay);
-    const [isGameOver, setIsGameOver] = useState(false);
     const [secondsPassed, setSecondsPassed] = useState(0);
 
     useEffect(() => {
-        setIsTimeVisible(shouldDisplay)
-        setIsGameOver(gameOver);
-    }, [shouldDisplay, gameOver])
-
-    const updateTime = () => {
-        if (isTimeVisible)
-        {
-            setSecondsPassed(secondsPassed + 1);
+        let interval = null;
+        if (gameStarted && !gameOver) {
+          interval = setInterval(() => {
+            setSecondsPassed(secondsPassed => secondsPassed + 1);
+          }, 1000);
+        } else if (gameOver) {
+          clearInterval(interval);
         }
-    }
+        return () => clearInterval(interval);
+      }, [gameStarted, gameOver, secondsPassed]);
 
-    if (!gameOver)
-    {
-        setTimeout(updateTime, 1000);
-    }
 
     return <p className="Time">{secondsPassed < 10 ? `00${secondsPassed}` : secondsPassed < 100 ? `0${secondsPassed}` : secondsPassed}</p>
     
-    return <></>
 }
 
 export default Time;
