@@ -335,7 +335,7 @@ function Board({width, height, totalNumberOfMines}) {
             {Height ? <p className="MineCount">🚩 {MinesRemaining}</p> : <></>}
             {Height ?  <Time gameStarted={TotalClicks > 0} gameOver={gameResult !== gameStatus.IN_PROGRESS}/> : <></>}
         </div>
-        <div id="bloop">
+        <div>
             <div className="Table" style={{display: 'grid', gridTemplateColumns: `repeat(${Width}, 35px)`, gridTemplateRows: `repeat(${Height}, 35px)`}}>
                 {createBoard()}
             </div>
