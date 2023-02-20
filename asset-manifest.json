@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.css": "/static/css/main.7f8a4199.css",
-    "main.js": "/static/js/main.0df40741.js",
-    "static/js/787.44e022fc.chunk.js": "/static/js/787.44e022fc.chunk.js",
-    "index.html": "/index.html",
-    "main.7f8a4199.css.map": "/static/css/main.7f8a4199.css.map",
-    "main.0df40741.js.map": "/static/js/main.0df40741.js.map",
-    "787.44e022fc.chunk.js.map": "/static/js/787.44e022fc.chunk.js.map"
+    "main.css": "/liam-king-99.github.io/personal-site/static/css/main.7f8a4199.css",
+    "main.js": "/liam-king-99.github.io/personal-site/static/js/main.12b22a32.js",
+    "static/js/787.44e022fc.chunk.js": "/liam-king-99.github.io/personal-site/static/js/787.44e022fc.chunk.js",
+    "index.html": "/liam-king-99.github.io/personal-site/index.html",
+    "main.7f8a4199.css.map": "/liam-king-99.github.io/personal-site/static/css/main.7f8a4199.css.map",
+    "main.12b22a32.js.map": "/liam-king-99.github.io/personal-site/static/js/main.12b22a32.js.map",
+    "787.44e022fc.chunk.js.map": "/liam-king-99.github.io/personal-site/static/js/787.44e022fc.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.7f8a4199.css",
-    "static/js/main.0df40741.js"
+    "static/js/main.12b22a32.js"
   ]
 }
