@@ -5,8 +5,5 @@
 #MinesAndTime {
     display: flex;
     justify-content: space-between;
-}
-
-.Table {
-    margin: auto;
+    font-size: 24px;
 }

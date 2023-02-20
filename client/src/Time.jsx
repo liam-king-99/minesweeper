@@ -24,19 +24,7 @@ const Time = ({shouldDisplay, gameOver, Width}) =>
         setTimeout(updateTime, 1000);
     }
 
-    const secondsPassedToTimeString = () =>
-    {
-        const hours = Math.floor(secondsPassed / 3600);
-        const minutes = Math.floor((secondsPassed - (3600 * hours)) / 60);
-        const seconds = secondsPassed - (3600 * hours) - (60 * minutes);
-        return `${hours > 0 ? hours + ':' : ''}${hours > 0 ? (minutes > 9 ? minutes : `0${minutes}:`) : (minutes > 0 ? `${minutes}:` : '0:')}${seconds > 9 ? seconds : `0${seconds}`}`
-        // return `${secondsPassed}`
-    }
-
-    if (isTimeVisible)
-    {
-        return <p className="Time" style={{marginRight: Width === 9 ? '40%' : Width === 16 ? '30%' : '15%'}}>{secondsPassedToTimeString()}</p>
-    }
+    return <p className="Time">{secondsPassed < 10 ? `00${secondsPassed}` : secondsPassed < 100 ? `0${secondsPassed}` : secondsPassed}</p>
     
     return <></>
 }
