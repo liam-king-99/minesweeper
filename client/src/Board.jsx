@@ -351,7 +351,7 @@ function Board({width, height, totalNumberOfMines}) {
     <div className="Game">
         <div id="MinesAndTime">
             {<div className="MineCount">🚩 {MinesRemaining}</div>}
-            <div>
+            <div className='DifficultyFormAndReset'>
                 <select onChange={(e) => {
                     setGameResult(gameStatus.IN_PROGRESS)
                     setMinesRemaining(mapDifficultyToGameSettings[e.target.value]['_totalNumberOfMines'])
