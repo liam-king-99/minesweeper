@@ -331,9 +331,19 @@ function Board({width, height, totalNumberOfMines}) {
 
     return (
     <div className="Game">
-        <div id="MinesAndTime" style={{display: 'flex', justifyContent: 'space-between'}}>
-            {Height ? <p className="MineCount">🚩 {MinesRemaining}</p> : <></>}
-            {Height ?  <Time gameStarted={TotalClicks > 0} gameOver={gameResult !== gameStatus.IN_PROGRESS}/> : <></>}
+        <div id="MinesAndTime">
+            {<div className="MineCount">🚩 {MinesRemaining}</div>}
+            <button onClick={() => {
+                setTotalClicks(0)
+                setGameResult(gameStatus.IN_PROGRESS)
+                setMinesRemaining(totalNumberOfMines)
+                setTotalNumberOfMines(totalNumberOfMines)
+                setMineLocations([])
+                setBoxesClicked([])
+                setNeighborsOfBoxById({})
+                setNumberOfMineNeighborsByBoxId({})
+            }}>Reset</button>
+            {<Time gameStarted={TotalClicks > 0} gameOver={gameResult !== gameStatus.IN_PROGRESS}/>}
         </div>
         <div>
             <div className="Table" style={{display: 'grid', gridTemplateColumns: `repeat(${Width}, 35px)`, gridTemplateRows: `repeat(${Height}, 35px)`}}>
