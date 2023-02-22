@@ -1,3 +1,8 @@
+body {
+  background-color: #333333;
+  color: lightgray;
+}
+
 .App {
   text-align: center;
 }
