@@ -7,3 +7,13 @@
     justify-content: space-between;
     font-size: 24px;
 }
+
+.Table {
+    justify-content: center;
+    align-items: center;
+    margin-top: 2rem;
+}
+
+.Game {
+    margin: auto;
+}

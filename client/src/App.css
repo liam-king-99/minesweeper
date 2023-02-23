@@ -1,3 +1,8 @@
+body {
+  background-color: #333333;
+  color: lightgray;
+}
+
 .App {
   text-align: center;
 }
@@ -5,6 +10,8 @@
 .app-root {
   display: flex;
   flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
 #MinesweeperHeader {
