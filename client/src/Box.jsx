@@ -32,7 +32,7 @@ const gameStatus = {
     WON: 1
 };
 
-function Box({Id, IsMine, MineNeighbors, HandleBoardClick, Width, ClickOnBox, IsClicked, UpdateMinesRemaining, SetGameLose, GetGameResult}) {
+function Box({Id, IsMine, MineNeighbors, HandleBoardClick, IsClicked, UpdateMinesRemaining, SetGameLose, GetGameResult}) {
 
     const UNCLICKED = 0;
     const CLICKED = 1;
@@ -40,14 +40,14 @@ function Box({Id, IsMine, MineNeighbors, HandleBoardClick, Width, ClickOnBox, Is
 
     const boxRef = useRef(null);
 
-    const [isMine, setIsMine] = useState(IsMine);
-    const [status, setStatus] = useState(IsClicked);
-    const [mineNeighbors, setMineNeighbors] = useState(MineNeighbors);
+    const [isMine, setIsMine] = useState(IsMine());
+    const [status, setStatus] = useState(IsClicked());
+    const [mineNeighbors, setMineNeighbors] = useState(MineNeighbors());
 
     useEffect(() => {
         setIsMine(IsMine);
         setMineNeighbors(MineNeighbors);
-        setStatus(IsClicked)
+        setStatus(IsClicked())
     }, [IsMine, MineNeighbors, IsClicked])
 
     const handleClick = (id) => {
