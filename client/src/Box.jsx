@@ -72,9 +72,9 @@ function Box({Id, IsMine, MineNeighbors, HandleBoardClick, Width, ClickOnBox, Is
     }
 
     const handleRightClick = (event) => {
+        event.preventDefault();
         if (GetGameResult() === gameStatus.IN_PROGRESS)
         {
-            event.preventDefault();
             if (status === UNCLICKED)
             {
                 setStatus(FLAGGED);
