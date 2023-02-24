@@ -98,12 +98,12 @@ function Box({Id, IsMine, MineNeighbors, HandleBoardClick, Width, ClickOnBox, Is
             if (isMine)
             {
                 return (
-                    <img className="box" src={bomb}>
+                    <img className="box" onContextMenu={(e) => e.preventDefault()} src={bomb}>
                     </img>
                     );
             }
             return (
-                <img className="box" src={MineNeighborImages[mineNeighbors]}>
+                <img className="box" onContextMenu={(e) => e.preventDefault()} src={MineNeighborImages[mineNeighbors]}>
                 </img>
                 );
             

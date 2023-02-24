@@ -167,7 +167,7 @@ function Board({width, height, totalNumberOfMines}) {
         {
             // Top left corner already handled
             // Bottom left corner
-            if (id === Width * height - Width)
+            if (id === Width * Height - Width)
             {
                 if ((MineLocations).includes((id+1).toString())) numberOfMineNeighbors++;
                 if ((MineLocations).includes((id-Width).toString())) numberOfMineNeighbors++;
@@ -198,7 +198,7 @@ function Board({width, height, totalNumberOfMines}) {
         {
             // Top right corner already handled
             // Bottom right corner
-            if (id === Width * height - 1)
+            if (id === Width * Height - 1)
             {
                 if ((MineLocations).includes((id-Width).toString())) numberOfMineNeighbors++;
                 if ((MineLocations).includes((id-1).toString())) numberOfMineNeighbors++;
