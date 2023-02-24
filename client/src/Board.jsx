@@ -365,7 +365,7 @@ function Board({width, height, totalNumberOfMines}) {
                     setTotalClicks(0)
                 }}>
                     <option value="Beginner">Beginner</option>
-                    <option value="Intermediate">Intermediate</option>
+                    <option value="Intermediate" selected>Intermediate</option>
                     <option value="Expert">Expert</option>
                 </select>
                 <button onClick={() => {

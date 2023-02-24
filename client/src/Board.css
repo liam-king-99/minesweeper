@@ -17,3 +17,8 @@
 .Game {
     margin: auto;
 }
+
+.DifficultyFormAndReset {
+    display: flex;
+    gap: 1rem;
+}
