@@ -289,18 +289,15 @@ function Board({width, height, totalNumberOfMines}) {
             for (let _width = 0; _width < Width; _width++)
             {
                 const boxId = `${_height*Width + _width}`;
+                const isClicked = (TotalClicks === 0 || !BoxesClicked.includes(boxId)) ? UNCLICKED : CLICKED
+                const isMine = MineLocations.includes(boxId)
+                const mineNeighbors = TotalClicks === 0 ? 0 : numberOfMineNeighborsByBoxId[boxId]
                 gameBoard.push(<div id={boxId}>
                                 <Box Id={boxId} 
-                                IsMine={() => MineLocations.includes(boxId)} 
-                                MineNeighbors={() => {
-                                    if (TotalClicks === 0) return 0
-                                    return numberOfMineNeighborsByBoxId[boxId]
-                                }} 
+                                IsMine={isMine} 
+                                MineNeighbors={mineNeighbors} 
                                 HandleBoardClick={handleBoardClick} 
-                                IsClicked={() => {
-                                    if (TotalClicks === 0) return UNCLICKED
-                                    return BoxesClicked.includes(boxId) ? CLICKED : UNCLICKED
-                                }} 
+                                IsClicked={isClicked} 
                                 UpdateMinesRemaining={updateMinesRemaining}
                                 SetGameLose={setGameLose}
                                 GetGameResult={getGameResult}/></div>);

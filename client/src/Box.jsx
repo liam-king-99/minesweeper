@@ -40,14 +40,14 @@ function Box({Id, IsMine, MineNeighbors, HandleBoardClick, IsClicked, UpdateMine
 
     const boxRef = useRef(null);
 
-    const [isMine, setIsMine] = useState(IsMine());
-    const [status, setStatus] = useState(IsClicked());
-    const [mineNeighbors, setMineNeighbors] = useState(MineNeighbors());
+    const [isMine, setIsMine] = useState(IsMine);
+    const [status, setStatus] = useState(IsClicked);
+    const [mineNeighbors, setMineNeighbors] = useState(MineNeighbors);
 
     useEffect(() => {
         setIsMine(IsMine);
         setMineNeighbors(MineNeighbors);
-        setStatus(IsClicked())
+        setStatus(IsClicked)
     }, [IsMine, MineNeighbors, IsClicked])
 
     const handleClick = (id) => {
