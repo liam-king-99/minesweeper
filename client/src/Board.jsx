@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import Box from './Box';
 import Time from './Time';
 import './Board.css';
@@ -77,7 +77,6 @@ function Board({width, height, totalNumberOfMines}) {
             if (BoxesClicked.length === Height*Width - TotalNumberOfMines)
             {
                 setGameResult(gameStatus.WON)
-                //alert("Victory!");
                 return
             }
             if (neighborsOfBoxById[id])
@@ -100,7 +99,6 @@ function Board({width, height, totalNumberOfMines}) {
         if (BoxesClicked.length === Height*Width - TotalNumberOfMines)
         {
             setGameResult(gameStatus.WON)
-            //alert("Victory!");
             return
         }
         if (neighborsOfBoxById[id])
@@ -146,7 +144,6 @@ function Board({width, height, totalNumberOfMines}) {
                         if ((MineLocations).includes((id+1).toString())) numberOfMineNeighbors++;
                         if ((MineLocations).includes((id+Width).toString())) numberOfMineNeighbors++;
                         if ((MineLocations).includes((id+Width+1).toString())) numberOfMineNeighbors++;
-                        //if (numberOfMineNeighbors === 0) neighborsOfBoxById[id.toString()] = [id+1, id+width, id+width+1];
                         if (numberOfMineNeighbors === 0 && !neighborsOfBoxById[id])
                         {
                             setNeighborsOfBoxById(previousState => ({...previousState, [id]: [id+1, id+Width, id+Width+1]}))
@@ -158,7 +155,6 @@ function Board({width, height, totalNumberOfMines}) {
                         if ((MineLocations).includes((id-1).toString())) numberOfMineNeighbors++;
                         if ((MineLocations).includes((id+Width).toString())) numberOfMineNeighbors++;
                         if ((MineLocations).includes((id+Width-1).toString())) numberOfMineNeighbors++;
-                        //if (numberOfMineNeighbors === 0) neighborsOfBoxById[id.toString()] = [id-1, id+width, id+width-1];
                         if (numberOfMineNeighbors === 0 && !neighborsOfBoxById[id])
                         {
                             setNeighborsOfBoxById(previousState => ({...previousState, [id]: [id-1, id+Width, id+Width-1]}))
@@ -172,7 +168,6 @@ function Board({width, height, totalNumberOfMines}) {
                         if ((MineLocations).includes((id+Width).toString())) numberOfMineNeighbors++;
                         if ((MineLocations).includes((id+Width-1).toString())) numberOfMineNeighbors++;
                         if ((MineLocations).includes((id+Width+1).toString())) numberOfMineNeighbors++;
-                        //if (numberOfMineNeighbors === 0) neighborsOfBoxById[id.toString()] = [id-1, id+1, id+width, id+width-1, id+width+1];
                         if (numberOfMineNeighbors === 0 && !neighborsOfBoxById[id])
                         {
                             setNeighborsOfBoxById(previousState => ({...previousState, [id]: [id-1, id+1, id+Width, id+Width-1, id+Width+1]}))
@@ -189,7 +184,6 @@ function Board({width, height, totalNumberOfMines}) {
                         if ((MineLocations).includes((id+1).toString())) numberOfMineNeighbors++;
                         if ((MineLocations).includes((id-Width).toString())) numberOfMineNeighbors++;
                         if ((MineLocations).includes((id-Width+1).toString())) numberOfMineNeighbors++;
-                        //if (numberOfMineNeighbors === 0) neighborsOfBoxById[id.toString()] = [id+1, id-width, id-width+1];
                         if (numberOfMineNeighbors === 0 && !neighborsOfBoxById[id])
                         {
                             setNeighborsOfBoxById(previousState => ({...previousState, [id]: [id+1, id-Width, id-Width+1]}))
@@ -203,7 +197,6 @@ function Board({width, height, totalNumberOfMines}) {
                         if ((MineLocations).includes((id-Width).toString())) numberOfMineNeighbors++;
                         if ((MineLocations).includes((id+Width+1).toString())) numberOfMineNeighbors++;
                         if ((MineLocations).includes((id-Width+1).toString())) numberOfMineNeighbors++;
-                        //if (numberOfMineNeighbors === 0) neighborsOfBoxById[id.toString()] = [id+1, id+width, id-width, id+width+1, id-width+1];
                         if (numberOfMineNeighbors === 0 && !neighborsOfBoxById[id])
                         {
                             setNeighborsOfBoxById(previousState => ({...previousState, [id]: [id+1, id+Width, id-Width, id+Width+1, id-Width+1]}))
@@ -220,7 +213,6 @@ function Board({width, height, totalNumberOfMines}) {
                         if ((MineLocations).includes((id-Width).toString())) numberOfMineNeighbors++;
                         if ((MineLocations).includes((id-1).toString())) numberOfMineNeighbors++;
                         if ((MineLocations).includes((id-Width-1).toString())) numberOfMineNeighbors++;
-                        //if (numberOfMineNeighbors === 0) neighborsOfBoxById[id.toString()] = [id-1, id-width, id-width-1];
                         if (numberOfMineNeighbors === 0 && !neighborsOfBoxById[id])
                         {
                             setNeighborsOfBoxById(previousState => ({...previousState, [id]: [id-1, id-Width, id-Width-1]}))
@@ -234,7 +226,6 @@ function Board({width, height, totalNumberOfMines}) {
                         if ((MineLocations).includes((id-1).toString())) numberOfMineNeighbors++;
                         if ((MineLocations).includes((id-Width-1).toString())) numberOfMineNeighbors++;
                         if ((MineLocations).includes((id+Width-1).toString())) numberOfMineNeighbors++;
-                        //if (numberOfMineNeighbors === 0) neighborsOfBoxById[id.toString()] = [id-1, id-width, id+width, id+width-1, id-width-1];
                         if (numberOfMineNeighbors === 0 && !neighborsOfBoxById[id])
                         {
                             setNeighborsOfBoxById(previousState => ({...previousState, [id]: [id-1, id-Width, id+Width, id+Width-1, id-Width-1]}))
@@ -250,7 +241,6 @@ function Board({width, height, totalNumberOfMines}) {
                     if ((MineLocations).includes((id-Width).toString())) numberOfMineNeighbors++;
                     if ((MineLocations).includes((id-Width-1).toString())) numberOfMineNeighbors++;
                     if ((MineLocations).includes((id-Width+1).toString())) numberOfMineNeighbors++;
-                    //if (numberOfMineNeighbors === 0) neighborsOfBoxById[id.toString()] = [id-1, id+1, id-width, id-width-1, id-width+1];
                     if (numberOfMineNeighbors === 0 && !neighborsOfBoxById[id])
                     {
                         setNeighborsOfBoxById(previousState => ({...previousState, [id]: [id-1, id+1, id-Width, id-Width-1, id-Width+1]}))
@@ -267,7 +257,6 @@ function Board({width, height, totalNumberOfMines}) {
                     if ((MineLocations).includes((id+Width-1).toString())) numberOfMineNeighbors++;
                     if ((MineLocations).includes((id+Width).toString())) numberOfMineNeighbors++;
                     if ((MineLocations).includes((id+Width+1).toString())) numberOfMineNeighbors++;
-                    //if (numberOfMineNeighbors === 0) neighborsOfBoxById[id.toString()] = [id-1, id+1, id-width-1, id-width, id-width+1, id+width-1, id+width, id+width+1];
                     if (numberOfMineNeighbors === 0 && !neighborsOfBoxById[id])
                     {
                         setNeighborsOfBoxById(previousState => ({...previousState, [id]: [id-1, id+1, id-Width-1, id-Width, id-Width+1, id+Width-1, id+Width, id+Width+1]}))

@@ -36,7 +36,6 @@ function Box({Id, IsMine, MineNeighbors, HandleBoardClick, IsClicked, UpdateMine
 
     const UNCLICKED = 0;
     const CLICKED = 1;
-    const FLAGGED = 2;
 
     const boxRef = useRef(null);
 
@@ -57,7 +56,6 @@ function Box({Id, IsMine, MineNeighbors, HandleBoardClick, IsClicked, UpdateMine
             if (isMine)
             {
                 SetGameLose();
-                //alert("Game over")
                 return
             }
             HandleBoardClick(id);
@@ -77,24 +75,24 @@ function Box({Id, IsMine, MineNeighbors, HandleBoardClick, IsClicked, UpdateMine
     switch (status) {
         case UNCLICKED:
             return (
-                <img ref={boxRef} className="box" id={Id} onClick={() => handleClick(Id)} onContextMenu={handleRightClick} src={facingDown}></img>
+                <img ref={boxRef} className="box" id={Id} onClick={() => handleClick(Id)} onContextMenu={handleRightClick} src={facingDown} alt="unopened"></img>
                 );
         case CLICKED:
             if (isMine)
             {
                 return (
-                    <img className="box" onContextMenu={(e) => e.preventDefault()} src={mine}>
+                    <img className="box" onContextMenu={(e) => e.preventDefault()} src={mine} alt="mine">
                     </img>
                     );
             }
             return (
-                <img className="box" onContextMenu={(e) => e.preventDefault()} src={MineNeighborImages[mineNeighbors]}>
+                <img className="box" onContextMenu={(e) => e.preventDefault()} src={MineNeighborImages[mineNeighbors]} alt={mineNeighbors}>
                 </img>
                 );
             
         default:
             return (
-                <img className="box" id={Id} onContextMenu={handleRightClick} src={flagged}>
+                <img className="box" id={Id} onContextMenu={handleRightClick} src={flagged} alt="flagged">
                 </img>
                 );
     }
