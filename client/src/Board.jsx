@@ -39,6 +39,7 @@ function Board({width, height, totalNumberOfMines}) {
     const [TotalClicks, setTotalClicks] = useState(0);
     // Keep track of which boxes have been opened. 
     const [BoxesClicked, setBoxesClicked] = useState([]);
+    const [BoxesFlagged, setBoxesFlagged] = useState([])
     const [MineLocations, setMineLocations] = useState([]);
     const [MinesRemaining, setMinesRemaining] = useState(totalNumberOfMines);
     const [gameResult, setGameResult] = useState(gameStatus.IN_PROGRESS);
@@ -51,7 +52,7 @@ function Board({width, height, totalNumberOfMines}) {
 
     const updateMinesRemaining = (delta) =>
     {
-        const newMinesRemaining = MinesRemaining + delta;
+        const newMinesRemaining = Math.min(MinesRemaining + delta, TotalNumberOfMines);
         setMinesRemaining(newMinesRemaining);
     }
 
@@ -106,8 +107,25 @@ function Board({width, height, totalNumberOfMines}) {
         {
             for (let neighbor of neighborsOfBoxById[id])
             {
-                if (!BoxesClicked.includes(neighbor.toString())) clickOnBox(neighbor.toString());
+                if (!BoxesClicked.includes(neighbor.toString()) && !BoxesFlagged.includes(neighbor.toString())) clickOnBox(neighbor.toString());
             }
+        }
+    }
+
+    const rightClickOnBox = (id) => {
+        if (BoxesFlagged.includes(id))
+        {
+            // Remove it from the array
+            setMinesRemaining(previousState => Math.min(previousState + 1, TotalNumberOfMines))
+            const setForFlaggedBoxes = new Set(BoxesFlagged)
+            setForFlaggedBoxes.delete(id)
+            setBoxesFlagged(Array.from(setForFlaggedBoxes))
+        }
+        else
+        {
+            // Add it to the array
+            setMinesRemaining(previousState => Math.min(previousState - 1, TotalNumberOfMines))
+            setBoxesFlagged(previousState => [...previousState, id])
         }
     }
 
@@ -289,7 +307,19 @@ function Board({width, height, totalNumberOfMines}) {
             for (let _width = 0; _width < Width; _width++)
             {
                 const boxId = `${_height*Width + _width}`;
-                const isClicked = (TotalClicks === 0 || !BoxesClicked.includes(boxId)) ? UNCLICKED : CLICKED
+                let isClicked
+                if (BoxesFlagged.includes(boxId))
+                {
+                    isClicked = FLAGGED
+                }
+                else if (BoxesClicked.includes(boxId))
+                {
+                    isClicked = CLICKED
+                }
+                else
+                {
+                    isClicked = UNCLICKED
+                }
                 const isMine = MineLocations.includes(boxId)
                 const mineNeighbors = TotalClicks === 0 ? 0 : numberOfMineNeighborsByBoxId[boxId]
                 gameBoard.push(<div id={boxId}>
@@ -300,7 +330,8 @@ function Board({width, height, totalNumberOfMines}) {
                                 IsClicked={isClicked} 
                                 UpdateMinesRemaining={updateMinesRemaining}
                                 SetGameLose={setGameLose}
-                                GetGameResult={getGameResult}/></div>);
+                                GetGameResult={getGameResult}
+                                UpdateFlaggedBoxes={rightClickOnBox}/></div>);
             }
         }
         return gameBoard;
@@ -322,6 +353,7 @@ function Board({width, height, totalNumberOfMines}) {
                     setWidth(mapDifficultyToGameSettings[e.target.value]['_width'])
                     setHeight(mapDifficultyToGameSettings[e.target.value]['_height'])
                     setTotalClicks(0)
+                    setBoxesFlagged([])
                 }}>
                     <option value="Beginner">Beginner</option>
                     <option value="Intermediate">Intermediate</option>
@@ -336,6 +368,7 @@ function Board({width, height, totalNumberOfMines}) {
                     setBoxesClicked([])
                     setNeighborsOfBoxById({})
                     setNumberOfMineNeighborsByBoxId({})
+                    setBoxesFlagged([])
                 }}>Reset</button>
             </div>
             {<Time gameStarted={TotalClicks > 0} gameOver={gameResult !== gameStatus.IN_PROGRESS}/>}

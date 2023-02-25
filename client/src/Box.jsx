@@ -10,7 +10,7 @@ import box6 from './images/box6.png'
 import box7 from './images/box7.png'
 import box8 from './images/box8.png'
 import flagged from './images/flagged.png'
-import bomb from './images/bomb.png'
+import mine from './images/mine.png'
 import './Box.css'
 
 
@@ -32,7 +32,7 @@ const gameStatus = {
     WON: 1
 };
 
-function Box({Id, IsMine, MineNeighbors, HandleBoardClick, IsClicked, UpdateMinesRemaining, SetGameLose, GetGameResult}) {
+function Box({Id, IsMine, MineNeighbors, HandleBoardClick, IsClicked, UpdateMinesRemaining, SetGameLose, GetGameResult, UpdateFlaggedBoxes}) {
 
     const UNCLICKED = 0;
     const CLICKED = 1;
@@ -53,12 +53,6 @@ function Box({Id, IsMine, MineNeighbors, HandleBoardClick, IsClicked, UpdateMine
     const handleClick = (id) => {
         if (GetGameResult() === gameStatus.IN_PROGRESS)
         {
-            if (status === FLAGGED)
-            {
-                UpdateMinesRemaining(1);
-                setStatus(UNCLICKED);
-                return;
-            }
             setStatus(CLICKED);
             if (isMine)
             {
@@ -75,16 +69,7 @@ function Box({Id, IsMine, MineNeighbors, HandleBoardClick, IsClicked, UpdateMine
         event.preventDefault();
         if (GetGameResult() === gameStatus.IN_PROGRESS)
         {
-            if (status === UNCLICKED)
-            {
-                setStatus(FLAGGED);
-                UpdateMinesRemaining(-1);
-            }
-            else
-            {
-                setStatus(UNCLICKED);
-                UpdateMinesRemaining(1);
-            }
+            UpdateFlaggedBoxes(Id.toString())
         }
         
     }
@@ -98,7 +83,7 @@ function Box({Id, IsMine, MineNeighbors, HandleBoardClick, IsClicked, UpdateMine
             if (isMine)
             {
                 return (
-                    <img className="box" onContextMenu={(e) => e.preventDefault()} src={bomb}>
+                    <img className="box" onContextMenu={(e) => e.preventDefault()} src={mine}>
                     </img>
                     );
             }
@@ -109,7 +94,7 @@ function Box({Id, IsMine, MineNeighbors, HandleBoardClick, IsClicked, UpdateMine
             
         default:
             return (
-                <img className="box" id={Id} onClick={() => handleClick(Id)} onContextMenu={handleRightClick} src={flagged}>
+                <img className="box" id={Id} onContextMenu={handleRightClick} src={flagged}>
                 </img>
                 );
     }
