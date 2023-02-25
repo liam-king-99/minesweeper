@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import Box from './Box';
 import Time from './Time';
 import './Board.css';
@@ -27,12 +27,6 @@ const mapDifficultyToGameSettings = {
     }
 }
 
-// Map id of each box to an array containing ids of its neighbors
-let NeighborsOfBox = {};
-
-// Map id of each box to a number representing how many neighbors it has
-let NumberOfMineNeighbors = {};
-
 function Board({width, height, totalNumberOfMines}) {
 
     const UNCLICKED = 0;
@@ -45,6 +39,7 @@ function Board({width, height, totalNumberOfMines}) {
     const [TotalClicks, setTotalClicks] = useState(0);
     // Keep track of which boxes have been opened. 
     const [BoxesClicked, setBoxesClicked] = useState([]);
+    const [BoxesFlagged, setBoxesFlagged] = useState([])
     const [MineLocations, setMineLocations] = useState([]);
     const [MinesRemaining, setMinesRemaining] = useState(totalNumberOfMines);
     const [gameResult, setGameResult] = useState(gameStatus.IN_PROGRESS);
@@ -57,7 +52,7 @@ function Board({width, height, totalNumberOfMines}) {
 
     const updateMinesRemaining = (delta) =>
     {
-        const newMinesRemaining = MinesRemaining + delta;
+        const newMinesRemaining = Math.min(MinesRemaining + delta, TotalNumberOfMines);
         setMinesRemaining(newMinesRemaining);
     }
 
@@ -82,7 +77,6 @@ function Board({width, height, totalNumberOfMines}) {
             if (BoxesClicked.length === Height*Width - TotalNumberOfMines)
             {
                 setGameResult(gameStatus.WON)
-                //alert("Victory!");
                 return
             }
             if (neighborsOfBoxById[id])
@@ -105,185 +99,179 @@ function Board({width, height, totalNumberOfMines}) {
         if (BoxesClicked.length === Height*Width - TotalNumberOfMines)
         {
             setGameResult(gameStatus.WON)
-            //alert("Victory!");
             return
         }
         if (neighborsOfBoxById[id])
         {
             for (let neighbor of neighborsOfBoxById[id])
             {
-                if (!BoxesClicked.includes(neighbor.toString())) clickOnBox(neighbor.toString());
+                if (!BoxesClicked.includes(neighbor.toString()) && !BoxesFlagged.includes(neighbor.toString())) clickOnBox(neighbor.toString());
             }
         }
     }
 
-    // Given an id, see how many mines are touching the box
-    const countMineNeighbors = (id) => {
-        let numberOfMineNeighbors = 0;
-        // Top row
-        if (id < Width)
+    const rightClickOnBox = (id) => {
+        if (BoxesFlagged.includes(id))
         {
-            // Top left corner
-            if (id === 0)
-            {
-                if ((MineLocations).includes((id+1).toString())) numberOfMineNeighbors++;
-                if ((MineLocations).includes((id+Width).toString())) numberOfMineNeighbors++;
-                if ((MineLocations).includes((id+Width+1).toString())) numberOfMineNeighbors++;
-                //if (numberOfMineNeighbors === 0) neighborsOfBoxById[id.toString()] = [id+1, id+width, id+width+1];
-                if (numberOfMineNeighbors === 0 && !neighborsOfBoxById[id])
-                {
-                    setNeighborsOfBoxById(previousState => ({...previousState, [id]: [id+1, id+Width, id+Width+1]}))
-                }
-            }
-            // Top right corner
-            else if (id === Width-1)
-            {
-                if ((MineLocations).includes((id-1).toString())) numberOfMineNeighbors++;
-                if ((MineLocations).includes((id+Width).toString())) numberOfMineNeighbors++;
-                if ((MineLocations).includes((id+Width-1).toString())) numberOfMineNeighbors++;
-                //if (numberOfMineNeighbors === 0) neighborsOfBoxById[id.toString()] = [id-1, id+width, id+width-1];
-                if (numberOfMineNeighbors === 0 && !neighborsOfBoxById[id])
-                {
-                    setNeighborsOfBoxById(previousState => ({...previousState, [id]: [id-1, id+Width, id+Width-1]}))
-                }
-            }
-            // Non-corner on top row
-            else
-            {
-                if ((MineLocations).includes((id-1).toString())) numberOfMineNeighbors++;
-                if ((MineLocations).includes((id+1).toString())) numberOfMineNeighbors++;
-                if ((MineLocations).includes((id+Width).toString())) numberOfMineNeighbors++;
-                if ((MineLocations).includes((id+Width-1).toString())) numberOfMineNeighbors++;
-                if ((MineLocations).includes((id+Width+1).toString())) numberOfMineNeighbors++;
-                //if (numberOfMineNeighbors === 0) neighborsOfBoxById[id.toString()] = [id-1, id+1, id+width, id+width-1, id+width+1];
-                if (numberOfMineNeighbors === 0 && !neighborsOfBoxById[id])
-                {
-                    setNeighborsOfBoxById(previousState => ({...previousState, [id]: [id-1, id+1, id+Width, id+Width-1, id+Width+1]}))
-                }
-            }
+            // Remove it from the array
+            setMinesRemaining(previousState => Math.min(previousState + 1, TotalNumberOfMines))
+            const setForFlaggedBoxes = new Set(BoxesFlagged)
+            setForFlaggedBoxes.delete(id)
+            setBoxesFlagged(Array.from(setForFlaggedBoxes))
         }
-        // Left side
-        else if (id % Width === 0)
-        {
-            // Top left corner already handled
-            // Bottom left corner
-            if (id === Width * Height - Width)
-            {
-                if ((MineLocations).includes((id+1).toString())) numberOfMineNeighbors++;
-                if ((MineLocations).includes((id-Width).toString())) numberOfMineNeighbors++;
-                if ((MineLocations).includes((id-Width+1).toString())) numberOfMineNeighbors++;
-                //if (numberOfMineNeighbors === 0) neighborsOfBoxById[id.toString()] = [id+1, id-width, id-width+1];
-                if (numberOfMineNeighbors === 0 && !neighborsOfBoxById[id])
-                {
-                    setNeighborsOfBoxById(previousState => ({...previousState, [id]: [id+1, id-Width, id-Width+1]}))
-                }
-            }
-            // Non-corner on left side
-            else
-            {
-                if ((MineLocations).includes((id+1).toString())) numberOfMineNeighbors++;
-                if ((MineLocations).includes((id+Width).toString())) numberOfMineNeighbors++;
-                if ((MineLocations).includes((id-Width).toString())) numberOfMineNeighbors++;
-                if ((MineLocations).includes((id+Width+1).toString())) numberOfMineNeighbors++;
-                if ((MineLocations).includes((id-Width+1).toString())) numberOfMineNeighbors++;
-                //if (numberOfMineNeighbors === 0) neighborsOfBoxById[id.toString()] = [id+1, id+width, id-width, id+width+1, id-width+1];
-                if (numberOfMineNeighbors === 0 && !neighborsOfBoxById[id])
-                {
-                    setNeighborsOfBoxById(previousState => ({...previousState, [id]: [id+1, id+Width, id-Width, id+Width+1, id-Width+1]}))
-                }
-            }
-        }
-        // Right side
-        else if (id % Width === (Width - 1))
-        {
-            // Top right corner already handled
-            // Bottom right corner
-            if (id === Width * Height - 1)
-            {
-                if ((MineLocations).includes((id-Width).toString())) numberOfMineNeighbors++;
-                if ((MineLocations).includes((id-1).toString())) numberOfMineNeighbors++;
-                if ((MineLocations).includes((id-Width-1).toString())) numberOfMineNeighbors++;
-                //if (numberOfMineNeighbors === 0) neighborsOfBoxById[id.toString()] = [id-1, id-width, id-width-1];
-                if (numberOfMineNeighbors === 0 && !neighborsOfBoxById[id])
-                {
-                    setNeighborsOfBoxById(previousState => ({...previousState, [id]: [id-1, id-Width, id-Width-1]}))
-                }
-            }
-            // Non-corner on right side
-            else
-            {
-                if ((MineLocations).includes((id-Width).toString())) numberOfMineNeighbors++;
-                if ((MineLocations).includes((id+Width).toString())) numberOfMineNeighbors++;
-                if ((MineLocations).includes((id-1).toString())) numberOfMineNeighbors++;
-                if ((MineLocations).includes((id-Width-1).toString())) numberOfMineNeighbors++;
-                if ((MineLocations).includes((id+Width-1).toString())) numberOfMineNeighbors++;
-                //if (numberOfMineNeighbors === 0) neighborsOfBoxById[id.toString()] = [id-1, id-width, id+width, id+width-1, id-width-1];
-                if (numberOfMineNeighbors === 0 && !neighborsOfBoxById[id])
-                {
-                    setNeighborsOfBoxById(previousState => ({...previousState, [id]: [id-1, id-Width, id+Width, id+Width-1, id-Width-1]}))
-                }
-            }
-        }
-        // Bottom row
-        else if (Math.floor(id / Width) === (Height - 1))
-        {
-            // Both corners on bottom row already handled
-            if ((MineLocations).includes((id-1).toString())) numberOfMineNeighbors++;
-            if ((MineLocations).includes((id+1).toString())) numberOfMineNeighbors++;
-            if ((MineLocations).includes((id-Width).toString())) numberOfMineNeighbors++;
-            if ((MineLocations).includes((id-Width-1).toString())) numberOfMineNeighbors++;
-            if ((MineLocations).includes((id-Width+1).toString())) numberOfMineNeighbors++;
-            //if (numberOfMineNeighbors === 0) neighborsOfBoxById[id.toString()] = [id-1, id+1, id-width, id-width-1, id-width+1];
-            if (numberOfMineNeighbors === 0 && !neighborsOfBoxById[id])
-            {
-                setNeighborsOfBoxById(previousState => ({...previousState, [id]: [id-1, id+1, id-Width, id-Width-1, id-Width+1]}))
-            }
-        }
-        // Non-edge
         else
         {
-            if ((MineLocations).includes((id-Width-1).toString())) numberOfMineNeighbors++;
-            if ((MineLocations).includes((id-Width).toString())) numberOfMineNeighbors++;
-            if ((MineLocations).includes((id-Width+1).toString())) numberOfMineNeighbors++;
-            if ((MineLocations).includes((id-1).toString())) numberOfMineNeighbors++;
-            if ((MineLocations).includes((id+1).toString())) numberOfMineNeighbors++;
-            if ((MineLocations).includes((id+Width-1).toString())) numberOfMineNeighbors++;
-            if ((MineLocations).includes((id+Width).toString())) numberOfMineNeighbors++;
-            if ((MineLocations).includes((id+Width+1).toString())) numberOfMineNeighbors++;
-            //if (numberOfMineNeighbors === 0) neighborsOfBoxById[id.toString()] = [id-1, id+1, id-width-1, id-width, id-width+1, id+width-1, id+width, id+width+1];
-            if (numberOfMineNeighbors === 0 && !neighborsOfBoxById[id])
+            // Add it to the array
+            setMinesRemaining(previousState => Math.min(previousState - 1, TotalNumberOfMines))
+            setBoxesFlagged(previousState => [...previousState, id])
+        }
+    }
+
+    // Given an id, see how many mines are touching the box
+    const countMineNeighbors = () => {
+        for (let _width = 0; _width < Width; _width++)
+        {
+            for (let _height = 0; _height < Height; _height++)
             {
-                setNeighborsOfBoxById(previousState => ({...previousState, [id]: [id-1, id+1, id-Width-1, id-Width, id-Width+1, id+Width-1, id+Width, id+Width+1]}))
+                const id = _height*Width + _width
+                let numberOfMineNeighbors = 0;
+                // Top row
+                if (id < Width)
+                {
+                    // Top left corner
+                    if (id === 0)
+                    {
+                        if ((MineLocations).includes((id+1).toString())) numberOfMineNeighbors++;
+                        if ((MineLocations).includes((id+Width).toString())) numberOfMineNeighbors++;
+                        if ((MineLocations).includes((id+Width+1).toString())) numberOfMineNeighbors++;
+                        if (numberOfMineNeighbors === 0 && !neighborsOfBoxById[id])
+                        {
+                            setNeighborsOfBoxById(previousState => ({...previousState, [id]: [id+1, id+Width, id+Width+1]}))
+                        }
+                    }
+                    // Top right corner
+                    else if (id === Width-1)
+                    {
+                        if ((MineLocations).includes((id-1).toString())) numberOfMineNeighbors++;
+                        if ((MineLocations).includes((id+Width).toString())) numberOfMineNeighbors++;
+                        if ((MineLocations).includes((id+Width-1).toString())) numberOfMineNeighbors++;
+                        if (numberOfMineNeighbors === 0 && !neighborsOfBoxById[id])
+                        {
+                            setNeighborsOfBoxById(previousState => ({...previousState, [id]: [id-1, id+Width, id+Width-1]}))
+                        }
+                    }
+                    // Non-corner on top row
+                    else
+                    {
+                        if ((MineLocations).includes((id-1).toString())) numberOfMineNeighbors++;
+                        if ((MineLocations).includes((id+1).toString())) numberOfMineNeighbors++;
+                        if ((MineLocations).includes((id+Width).toString())) numberOfMineNeighbors++;
+                        if ((MineLocations).includes((id+Width-1).toString())) numberOfMineNeighbors++;
+                        if ((MineLocations).includes((id+Width+1).toString())) numberOfMineNeighbors++;
+                        if (numberOfMineNeighbors === 0 && !neighborsOfBoxById[id])
+                        {
+                            setNeighborsOfBoxById(previousState => ({...previousState, [id]: [id-1, id+1, id+Width, id+Width-1, id+Width+1]}))
+                        }
+                    }
+                }
+                // Left side
+                else if (id % Width === 0)
+                {
+                    // Top left corner already handled
+                    // Bottom left corner
+                    if (id === Width * Height - Width)
+                    {
+                        if ((MineLocations).includes((id+1).toString())) numberOfMineNeighbors++;
+                        if ((MineLocations).includes((id-Width).toString())) numberOfMineNeighbors++;
+                        if ((MineLocations).includes((id-Width+1).toString())) numberOfMineNeighbors++;
+                        if (numberOfMineNeighbors === 0 && !neighborsOfBoxById[id])
+                        {
+                            setNeighborsOfBoxById(previousState => ({...previousState, [id]: [id+1, id-Width, id-Width+1]}))
+                        }
+                    }
+                    // Non-corner on left side
+                    else
+                    {
+                        if ((MineLocations).includes((id+1).toString())) numberOfMineNeighbors++;
+                        if ((MineLocations).includes((id+Width).toString())) numberOfMineNeighbors++;
+                        if ((MineLocations).includes((id-Width).toString())) numberOfMineNeighbors++;
+                        if ((MineLocations).includes((id+Width+1).toString())) numberOfMineNeighbors++;
+                        if ((MineLocations).includes((id-Width+1).toString())) numberOfMineNeighbors++;
+                        if (numberOfMineNeighbors === 0 && !neighborsOfBoxById[id])
+                        {
+                            setNeighborsOfBoxById(previousState => ({...previousState, [id]: [id+1, id+Width, id-Width, id+Width+1, id-Width+1]}))
+                        }
+                    }
+                }
+                // Right side
+                else if (id % Width === (Width - 1))
+                {
+                    // Top right corner already handled
+                    // Bottom right corner
+                    if (id === Width * Height - 1)
+                    {
+                        if ((MineLocations).includes((id-Width).toString())) numberOfMineNeighbors++;
+                        if ((MineLocations).includes((id-1).toString())) numberOfMineNeighbors++;
+                        if ((MineLocations).includes((id-Width-1).toString())) numberOfMineNeighbors++;
+                        if (numberOfMineNeighbors === 0 && !neighborsOfBoxById[id])
+                        {
+                            setNeighborsOfBoxById(previousState => ({...previousState, [id]: [id-1, id-Width, id-Width-1]}))
+                        }
+                    }
+                    // Non-corner on right side
+                    else
+                    {
+                        if ((MineLocations).includes((id-Width).toString())) numberOfMineNeighbors++;
+                        if ((MineLocations).includes((id+Width).toString())) numberOfMineNeighbors++;
+                        if ((MineLocations).includes((id-1).toString())) numberOfMineNeighbors++;
+                        if ((MineLocations).includes((id-Width-1).toString())) numberOfMineNeighbors++;
+                        if ((MineLocations).includes((id+Width-1).toString())) numberOfMineNeighbors++;
+                        if (numberOfMineNeighbors === 0 && !neighborsOfBoxById[id])
+                        {
+                            setNeighborsOfBoxById(previousState => ({...previousState, [id]: [id-1, id-Width, id+Width, id+Width-1, id-Width-1]}))
+                        }
+                    }
+                }
+                // Bottom row
+                else if (Math.floor(id / Width) === (Height - 1))
+                {
+                    // Both corners on bottom row already handled
+                    if ((MineLocations).includes((id-1).toString())) numberOfMineNeighbors++;
+                    if ((MineLocations).includes((id+1).toString())) numberOfMineNeighbors++;
+                    if ((MineLocations).includes((id-Width).toString())) numberOfMineNeighbors++;
+                    if ((MineLocations).includes((id-Width-1).toString())) numberOfMineNeighbors++;
+                    if ((MineLocations).includes((id-Width+1).toString())) numberOfMineNeighbors++;
+                    if (numberOfMineNeighbors === 0 && !neighborsOfBoxById[id])
+                    {
+                        setNeighborsOfBoxById(previousState => ({...previousState, [id]: [id-1, id+1, id-Width, id-Width-1, id-Width+1]}))
+                    }
+                }
+                // Non-edge
+                else
+                {
+                    if ((MineLocations).includes((id-Width-1).toString())) numberOfMineNeighbors++;
+                    if ((MineLocations).includes((id-Width).toString())) numberOfMineNeighbors++;
+                    if ((MineLocations).includes((id-Width+1).toString())) numberOfMineNeighbors++;
+                    if ((MineLocations).includes((id-1).toString())) numberOfMineNeighbors++;
+                    if ((MineLocations).includes((id+1).toString())) numberOfMineNeighbors++;
+                    if ((MineLocations).includes((id+Width-1).toString())) numberOfMineNeighbors++;
+                    if ((MineLocations).includes((id+Width).toString())) numberOfMineNeighbors++;
+                    if ((MineLocations).includes((id+Width+1).toString())) numberOfMineNeighbors++;
+                    if (numberOfMineNeighbors === 0 && !neighborsOfBoxById[id])
+                    {
+                        setNeighborsOfBoxById(previousState => ({...previousState, [id]: [id-1, id+1, id-Width-1, id-Width, id-Width+1, id+Width-1, id+Width, id+Width+1]}))
+                    }
+                }
+                
+                if (numberOfMineNeighborsByBoxId[id] === undefined) setNumberOfMineNeighborsByBoxId(previousState => ({...previousState, [id]: numberOfMineNeighbors}));
             }
         }
-        
-        if (numberOfMineNeighborsByBoxId[id] === undefined) setNumberOfMineNeighborsByBoxId(previousState => ({...previousState, [id]: numberOfMineNeighbors}));
-        return numberOfMineNeighbors;
     }
 
     // Create a table that has height rows and width columns
     const createBoard = () => 
     {
-        if (TotalClicks === 0)
-        {
-            const newMineArray = [];
-            const gameBoard = [];
-            for (let _height = 0; _height < Height; _height++)
-            {
-                for (let _width = 0; _width < Width; _width++)
-                {
-                    const boxId = `${_height*Width + _width}`;
-                    gameBoard.push(<div id={boxId}>
-                                    <Box Id={boxId} IsMine={false} MineNeighbors={0} 
-                                    HandleBoardClick={handleBoardClick} ClickOnBox={clickOnBox} 
-                                    Width={Width} Height={Height} IsClicked={0} 
-                                    UpdateMinesRemaining={updateMinesRemaining} SetGameLose={setGameLose}
-                                    GetGameResult={getGameResult}/></div>);
-                }
-            }
-            return gameBoard;
-        }
-        else if (TotalClicks === 1)
+        if (TotalClicks === 1)
         {
             const firstClickId = BoxesClicked[0];
             let mineLocationIterator = 0;
@@ -299,52 +287,43 @@ function Board({width, height, totalNumberOfMines}) {
                     mineLocationIterator++;
                 }
             }
-            if (BoxesClicked.length === 1)
-            {
-                clickOnBox(BoxesClicked[0])
-            }
-            const gameBoard = [];
-            for (let _height = 0; _height < Height; _height++)
-            {
-                for (let _width = 0; _width < Width; _width++)
-                {
-                    const boxId = `${_height*Width + _width}`;
-                    gameBoard.push(<div id={boxId}>
-                                    <Box Id={boxId} IsMine={(MineLocations).includes(boxId)} 
-                                    MineNeighbors={countMineNeighbors(Number(boxId))} 
-                                    HandleBoardClick={handleBoardClick}
-                                    ClickOnBox={clickOnBox} Width={Width} Height={Height} 
-                                    IsClicked={BoxesClicked.includes(boxId) ? CLICKED : UNCLICKED} 
-                                    UpdateMinesRemaining={updateMinesRemaining} SetGameLose={setGameLose}
-                                    GetGameResult={getGameResult}/>
-                                    </div>);
-                    
-                }
-            }
-            return gameBoard;
+            countMineNeighbors()
+            clickOnBox(BoxesClicked[0])
         }
-        else
+        const gameBoard = [];
+        for (let _height = 0; _height < Height; _height++)
         {
-            const gameBoard = [];
-            for (let _height = 0; _height < Height; _height++)
+            for (let _width = 0; _width < Width; _width++)
             {
-                for (let _width = 0; _width < Width; _width++)
+                const boxId = `${_height*Width + _width}`;
+                let isClicked
+                if (BoxesFlagged.includes(boxId))
                 {
-                    const boxId = `${_height*Width + _width}`;
-                    gameBoard.push(<div id={boxId}>
-                                    <Box Id={boxId} IsMine={(MineLocations).includes(boxId)} 
-                                    MineNeighbors={numberOfMineNeighborsByBoxId[boxId]} 
-                                    HandleBoardClick={handleBoardClick} ClickOnBox={clickOnBox} 
-                                    Width={Width} Height={Height} 
-                                    IsClicked={BoxesClicked.includes(boxId) ? CLICKED : UNCLICKED} 
-                                    UpdateMinesRemaining={updateMinesRemaining} SetGameLose={setGameLose}
-                                    GetGameResult={getGameResult}/>
-                                    </div>);
-                    
+                    isClicked = FLAGGED
                 }
+                else if (BoxesClicked.includes(boxId))
+                {
+                    isClicked = CLICKED
+                }
+                else
+                {
+                    isClicked = UNCLICKED
+                }
+                const isMine = MineLocations.includes(boxId)
+                const mineNeighbors = TotalClicks === 0 ? 0 : numberOfMineNeighborsByBoxId[boxId]
+                gameBoard.push(<div id={boxId}>
+                                <Box Id={boxId} 
+                                IsMine={isMine} 
+                                MineNeighbors={mineNeighbors} 
+                                HandleBoardClick={handleBoardClick} 
+                                IsClicked={isClicked} 
+                                UpdateMinesRemaining={updateMinesRemaining}
+                                SetGameLose={setGameLose}
+                                GetGameResult={getGameResult}
+                                UpdateFlaggedBoxes={rightClickOnBox}/></div>);
             }
-            return gameBoard
         }
+        return gameBoard;
     }
 
     return (
@@ -352,7 +331,7 @@ function Board({width, height, totalNumberOfMines}) {
         <div id="MinesAndTime">
             {<div className="MineCount">🚩 {MinesRemaining}</div>}
             <div className='DifficultyFormAndReset'>
-                <select onChange={(e) => {
+                <select defaultValue={'Intermediate'} onChange={(e) => {
                     setGameResult(gameStatus.IN_PROGRESS)
                     setMinesRemaining(mapDifficultyToGameSettings[e.target.value]['_totalNumberOfMines'])
                     setTotalNumberOfMines(mapDifficultyToGameSettings[e.target.value]['_totalNumberOfMines'])
@@ -363,9 +342,10 @@ function Board({width, height, totalNumberOfMines}) {
                     setWidth(mapDifficultyToGameSettings[e.target.value]['_width'])
                     setHeight(mapDifficultyToGameSettings[e.target.value]['_height'])
                     setTotalClicks(0)
+                    setBoxesFlagged([])
                 }}>
                     <option value="Beginner">Beginner</option>
-                    <option value="Intermediate" selected>Intermediate</option>
+                    <option value="Intermediate">Intermediate</option>
                     <option value="Expert">Expert</option>
                 </select>
                 <button onClick={() => {
@@ -377,6 +357,7 @@ function Board({width, height, totalNumberOfMines}) {
                     setBoxesClicked([])
                     setNeighborsOfBoxById({})
                     setNumberOfMineNeighborsByBoxId({})
+                    setBoxesFlagged([])
                 }}>Reset</button>
             </div>
             {<Time gameStarted={TotalClicks > 0} gameOver={gameResult !== gameStatus.IN_PROGRESS}/>}
