@@ -52,8 +52,7 @@ function Board({width, height, totalNumberOfMines}) {
 
     const updateMinesRemaining = (delta) =>
     {
-        const newMinesRemaining = Math.min(MinesRemaining + delta, TotalNumberOfMines);
-        setMinesRemaining(newMinesRemaining);
+        setMinesRemaining(previousState => Math.min(previousState + delta, TotalNumberOfMines));
     }
 
     // Called by a box if a mine is clicked on
@@ -66,48 +65,65 @@ function Board({width, height, totalNumberOfMines}) {
         return gameResult;
     }
 
+    const getAllBoxesToOpenOnCascade = (id) => 
+    {
+        let setOfBoxIds = new Set()
+        const getAllBoxesToOpenOnCascadeHelper = (id) =>
+        {
+            if (!setOfBoxIds.has(id))
+            {
+                setOfBoxIds.add(id)
+                if (neighborsOfBoxById[id])
+                {
+                    for (const neighbor of neighborsOfBoxById[id])
+                    {
+                        getAllBoxesToOpenOnCascadeHelper(neighbor.toString())
+                    }
+                }
+            }
+        }
+        getAllBoxesToOpenOnCascadeHelper(id)
+        return Array.from(setOfBoxIds)
+    }
+
     // Update clicks and boxes that have been opened
     const handleBoardClick = (id) => {
         if (gameResult === gameStatus.IN_PROGRESS)
         {
-            let newBoxesClicked = BoxesClicked;
-            newBoxesClicked.push(id);
-            setBoxesClicked(newBoxesClicked);
-            setTotalClicks(TotalClicks + 1);
-            if (BoxesClicked.length === Height*Width - TotalNumberOfMines)
+            setBoxesClicked(previousState => Array.from(new Set([...previousState, id])))
+            setTotalClicks(previousState => previousState + 1);
+            if (BoxesClicked.length === Height*Width - TotalNumberOfMines - 1)
             {
                 setGameResult(gameStatus.WON)
                 return
             }
             if (neighborsOfBoxById[id])
             {
-                for (let neighbor of neighborsOfBoxById[id])
-                {
-                    if (!BoxesClicked.includes(neighbor.toString())) clickOnBox(neighbor.toString());
-                }
+                clickOnBox(id)
             }
         }
     }
 
     const clickOnBox = (id) => {
-        if (!BoxesClicked.includes(id))
+        if (TotalClicks <= 1 || !BoxesClicked.includes(id))
         {
-            const newBoxesClicked = BoxesClicked;
-            newBoxesClicked.push(id);
-            setBoxesClicked(newBoxesClicked);
-        }
-        if (BoxesClicked.length === Height*Width - TotalNumberOfMines)
-        {
-            setGameResult(gameStatus.WON)
-            return
-        }
-        if (neighborsOfBoxById[id])
-        {
-            for (let neighbor of neighborsOfBoxById[id])
+            if (neighborsOfBoxById[id] && (BoxesClicked.length === 1 || !BoxesClicked.includes(id)))
             {
-                if (!BoxesClicked.includes(neighbor.toString()) && !BoxesFlagged.includes(neighbor.toString())) clickOnBox(neighbor.toString());
+                const boxesToOpenOnCascade = getAllBoxesToOpenOnCascade(id)
+                setBoxesClicked(previousState => Array.from(new Set([...previousState, ...boxesToOpenOnCascade])))
+            
+            }
+            else if (!BoxesClicked.includes(id))
+            {
+                setBoxesClicked(previousState => Array.from(new Set([...previousState, id])))
+            }
+            if (BoxesClicked.length === Height*Width - TotalNumberOfMines - 1)
+            {
+                setGameResult(gameStatus.WON)
+                return
             }
         }
+        
     }
 
     const rightClickOnBox = (id) => {
@@ -115,9 +131,7 @@ function Board({width, height, totalNumberOfMines}) {
         {
             // Remove it from the array
             setMinesRemaining(previousState => Math.min(previousState + 1, TotalNumberOfMines))
-            const setForFlaggedBoxes = new Set(BoxesFlagged)
-            setForFlaggedBoxes.delete(id)
-            setBoxesFlagged(Array.from(setForFlaggedBoxes))
+            setBoxesFlagged(previousState => previousState.filter(boxId => boxId !== id))
         }
         else
         {
