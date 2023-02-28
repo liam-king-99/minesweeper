@@ -33,27 +33,30 @@ function Board({width, height, totalNumberOfMines}) {
     const CLICKED = 1;
     const FLAGGED = 2;
 
+    // Width, Height, and TotalNumberOfMines stay constant unless the difficulty setting is changed 
     const [Width, setWidth] = useState(width);
     const [Height, setHeight] = useState(height);
     const [TotalNumberOfMines, setTotalNumberOfMines] = useState(totalNumberOfMines);
+    // Used to track if the first click has happened. Only updates on left clicks
     const [TotalClicks, setTotalClicks] = useState(0);
-    // Keep track of which boxes have been opened. 
+    // Keep track of which boxes have been opened. Used to check if the game is won
     const [BoxesClicked, setBoxesClicked] = useState([]);
+    // Updates when a user right clicks an unopened box
     const [BoxesFlagged, setBoxesFlagged] = useState([])
+    // Is set at the beginning of the game and remains constant
     const [MineLocations, setMineLocations] = useState([]);
+    // Updates when a user right clicks an unopened box. Starts as the TotalNumberOfMines
     const [MinesRemaining, setMinesRemaining] = useState(totalNumberOfMines);
+    // Either IN_PROGRESS, WON, or LOST. Used to see if the game is in progress
     const [gameResult, setGameResult] = useState(gameStatus.IN_PROGRESS);
 
-    // If a box doesn't touch any mines, it is elligible for cascading. Keep track of neighbors of boxes that don't touch any mines
-    //const neighborsOfBoxById: NeighborsOfBox = {};
+    // Maps IDs of boxes that don't touch any mines to all neighboring boxes
+    // Used to automatically open boxes when the user opens a box that doesn't touch a mine
     const [neighborsOfBoxById, setNeighborsOfBoxById] = useState({})
 
+    // Maps each box ID to the number of mines that touch the box. Used to display a number 
+    // when a box is opened
     const [numberOfMineNeighborsByBoxId, setNumberOfMineNeighborsByBoxId] = useState({})
-
-    const updateMinesRemaining = (delta) =>
-    {
-        setMinesRemaining(previousState => Math.min(previousState + delta, TotalNumberOfMines));
-    }
 
     // Called by a box if a mine is clicked on
     const setGameLose = () => {
@@ -65,6 +68,8 @@ function Board({width, height, totalNumberOfMines}) {
         return gameResult;
     }
 
+    // Called when a box that touches no mines is clicked. Returns an array of all of the boxes that 
+    // should be opened as a result
     const getAllBoxesToOpenOnCascade = (id) => 
     {
         let setOfBoxIds = new Set()
@@ -86,7 +91,7 @@ function Board({width, height, totalNumberOfMines}) {
         return Array.from(setOfBoxIds)
     }
 
-    // Update clicks and boxes that have been opened
+    // Update clicks and boxes that have been opened. Only called on on a left click of an unopened box
     const handleBoardClick = (id) => {
         if (gameResult === gameStatus.IN_PROGRESS)
         {
@@ -104,6 +109,7 @@ function Board({width, height, totalNumberOfMines}) {
         }
     }
 
+    // Called when a box is opened automatically. Uses getAllBoxesToOpenOnCascade
     const clickOnBox = (id) => {
         if (TotalClicks <= 1 || !BoxesClicked.includes(id))
         {
@@ -134,6 +140,7 @@ function Board({width, height, totalNumberOfMines}) {
         
     }
 
+    // Updates minesRemaining count and boxesFlagged array
     const rightClickOnBox = (id) => {
         if (BoxesFlagged.includes(id))
         {
@@ -149,6 +156,7 @@ function Board({width, height, totalNumberOfMines}) {
         }
     }
 
+    // Called after the first click. Ensures that the first box to open won't be a mine
     const placeMines = (firstClickId) => {
         const templateMineLocations = []
         if (TotalClicks === 1 && MineLocations.length < TotalNumberOfMines)
@@ -167,7 +175,7 @@ function Board({width, height, totalNumberOfMines}) {
         return templateMineLocations
     }
 
-    // Given an id, see how many mines are touching the box
+    // Given an id, see how many mines are touching the box. Populates setNeighborsOfBoxById
     const countMineNeighbors = (firstClickId) => {
         const templateMineLocations = MineLocations.length ? MineLocations : placeMines(firstClickId)
 
@@ -345,8 +353,7 @@ function Board({width, height, totalNumberOfMines}) {
                                 IsMine={isMine} 
                                 MineNeighbors={mineNeighbors} 
                                 HandleBoardClick={handleBoardClick} 
-                                IsClicked={isClicked} 
-                                UpdateMinesRemaining={updateMinesRemaining}
+                                IsClicked={isClicked}
                                 SetGameLose={setGameLose}
                                 GetGameResult={getGameResult}
                                 UpdateFlaggedBoxes={rightClickOnBox}/></div>);

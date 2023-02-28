@@ -32,7 +32,7 @@ const gameStatus = {
     WON: 1
 };
 
-function Box({Id, IsMine, MineNeighbors, HandleBoardClick, IsClicked, UpdateMinesRemaining, SetGameLose, GetGameResult, UpdateFlaggedBoxes}) {
+function Box({Id, IsMine, MineNeighbors, HandleBoardClick, IsClicked, SetGameLose, GetGameResult, UpdateFlaggedBoxes}) {
 
     const UNCLICKED = 0;
     const CLICKED = 1;
