@@ -156,16 +156,36 @@ function Board({width, height, totalNumberOfMines}) {
         }
     }
 
+    const getAdjacentBoxes = (firstClickId, height, width) => {
+        const row = Math.floor(firstClickId / width);
+        const col = firstClickId % width;
+        let adjacentBoxes = [];
+        for (let rowDiff = -1; rowDiff <= 1; rowDiff++)
+        {
+            for (let colDiff = -1; colDiff <= 1; colDiff++)
+            {
+                
+                if (row + rowDiff >= 0 && row + rowDiff < height && col + colDiff >= 0 && col + colDiff < width)
+                {
+                    adjacentBoxes.push(((row + rowDiff) * width + (col + colDiff) % width).toString());
+                }
+            }
+        }
+        return adjacentBoxes;
+    }
+
     // Called after the first click. Ensures that the first box to open won't be a mine
     const placeMines = (firstClickId) => {
+        const firstClickAdjacentBoxes = getAdjacentBoxes(firstClickId, Height, Width);
         const templateMineLocations = []
         if (TotalClicks === 1 && MineLocations.length < TotalNumberOfMines)
         {
             // First click happened. Generate mine locations such that first click is protected
+            // Surrounding squares should be safe as well
             while(templateMineLocations.length < TotalNumberOfMines)
             {
                 const newMineLocation = Math.floor(Math.random() * (Width * Height)).toString();
-                if (!(templateMineLocations).includes(newMineLocation) && newMineLocation !== firstClickId)
+                if (!templateMineLocations.includes(newMineLocation) && !firstClickAdjacentBoxes.includes(newMineLocation))
                 {
                     templateMineLocations.push(newMineLocation)
                 }
