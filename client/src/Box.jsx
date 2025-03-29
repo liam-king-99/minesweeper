@@ -1,30 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import facingDown from './images/facingDown.png'
-import box0 from './images/box0.png'
-import box1 from './images/box1.png'
-import box2 from './images/box2.png'
-import box3 from './images/box3.png'
-import box4 from './images/box4.png'
-import box5 from './images/box5.png'
-import box6 from './images/box6.png'
-import box7 from './images/box7.png'
-import box8 from './images/box8.png'
 import flagged from './images/flagged.png'
 import mine from './images/mine.png'
 import './Box.css'
-
-
-const MineNeighborImages = [
-    box0,
-    box1,
-    box2,
-    box3,
-    box4,
-    box5,
-    box6,
-    box7,
-    box8
-]
 
 const gameStatus = {
     LOST: -1,
@@ -75,26 +53,34 @@ function Box({Id, IsMine, MineNeighbors, HandleBoardClick, IsClicked, SetGameLos
     switch (status) {
         case UNCLICKED:
             return (
-                <img ref={boxRef} className="box" id={Id} onClick={() => handleClick(Id)} onContextMenu={handleRightClick} src={facingDown} alt="unopened"></img>
-                );
+                <div 
+                    ref={boxRef}
+                    className="unopened-box box"
+                    id={Id} onClick={() => handleClick(Id)}
+                    onContextMenu={handleRightClick}
+                />
+            );
         case CLICKED:
             if (isMine)
             {
                 return (
-                    <img className="box" onContextMenu={(e) => e.preventDefault()} src={mine} alt="mine">
-                    </img>
-                    );
+                    <div className="mine-box box" onContextMenu={(e) => e.preventDefault()}>
+                        X
+                    </div>
+                );
             }
             return (
-                <img className="box" onContextMenu={(e) => e.preventDefault()} src={MineNeighborImages[mineNeighbors]} alt={mineNeighbors}>
-                </img>
-                );
+                <div className={`opened-box box count-${mineNeighbors}`} onContextMenu={(e) => e.preventDefault()}>
+                    {mineNeighbors ? mineNeighbors : ''}
+                </div>
+            );
             
         default:
             return (
-                <img className="box" id={Id} onContextMenu={handleRightClick} src={flagged} alt="flagged">
-                </img>
-                );
+                <div className="flagged-box box" id={Id} onContextMenu={handleRightClick}>
+                    ?
+                </div>
+            );
     }
 }
 
