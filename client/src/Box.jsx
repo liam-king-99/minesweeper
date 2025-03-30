@@ -1,7 +1,4 @@
 import React, { useEffect, useRef, useState } from 'react';
-import facingDown from './images/facingDown.png'
-import flagged from './images/flagged.png'
-import mine from './images/mine.png'
 import './Box.css'
 
 const gameStatus = {
