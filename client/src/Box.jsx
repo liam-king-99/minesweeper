@@ -1,7 +1,5 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { 
-    BoxesFlaggedContext,
-    BoxesFlaggedDispatchContext,
     MinesRemainingContext,
     MinesRemainingDispatchContext
 } from './contexts';
@@ -18,11 +16,9 @@ function Box({Id, IsMine, MineNeighbors, HandleBoardClick, IsClicked, SetGameLos
 
     const UNCLICKED = 0;
     const CLICKED = 1;
+    const FLAGGED = 2;
 
     const boxRef = useRef(null);
-
-    const boxesFlagged = useContext(BoxesFlaggedContext);
-    const dispatchBoxesFlagged = useContext(BoxesFlaggedDispatchContext);
 
     const minesRemaining = useContext(MinesRemainingContext);
     const dispatchMinesRemaining = useContext(MinesRemainingDispatchContext);
@@ -33,10 +29,13 @@ function Box({Id, IsMine, MineNeighbors, HandleBoardClick, IsClicked, SetGameLos
     
 
     useEffect(() => {
+        if (IsClicked === 1 && status === FLAGGED) {
+            incrementMinesRemaining();
+        }
         setIsMine(IsMine);
         setMineNeighbors(MineNeighbors);
         setStatus(IsClicked)
-    }, [IsMine, MineNeighbors, IsClicked])
+    }, [IsMine, MineNeighbors, IsClicked, TotalNumberOfMines])
 
     const handleClick = (id) => {
         if (GetGameResult() === gameStatus.IN_PROGRESS || GetGameResult() === gameStatus.NOT_STARTED)
@@ -66,42 +65,17 @@ function Box({Id, IsMine, MineNeighbors, HandleBoardClick, IsClicked, SetGameLos
           });
     }
 
-    const addFlaggedBox = (id) => {
-        dispatchBoxesFlagged({
-            type: 'add',
-            id: id
-        })
-    }
-
-    const removeFlaggedBox = (id) => {
-        dispatchBoxesFlagged({
-            type: 'remove',
-            id: id
-        })
-    }
-
-    const setBoxesFlagged = (newValue) => {
-        dispatchBoxesFlagged({
-            type: 'set',
-            value: newValue
-        })
-    }
-
-    // Updates minesRemaining count and boxesFlagged array
+    // Updates minesRemaining count
     const rightClickOnBox = (id) => {
-        if (boxesFlagged.includes(id))
+        if (status === FLAGGED)
         {
-            // Remove it from the array
-            // setMinesRemaining(previousState => Math.min(previousState + 1, TotalNumberOfMines))
+            setStatus(UNCLICKED)
             incrementMinesRemaining();
-            removeFlaggedBox(id);
         }
-        else
+        else if (status === UNCLICKED)
         {
-            // Add it to the array
-            // setMinesRemaining(previousState => Math.min(previousState - 1, TotalNumberOfMines))
+            setStatus(FLAGGED)
             decrementMinesReamining();
-            addFlaggedBox(id);
         }
     }
 

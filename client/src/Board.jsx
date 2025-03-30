@@ -2,8 +2,6 @@ import { useContext, useState } from 'react';
 import Box from './Box';
 import Time from './Time';
 import { 
-    BoxesFlaggedContext,
-    BoxesFlaggedDispatchContext,
     MinesRemainingContext,
     MinesRemainingDispatchContext
 } from './contexts';
@@ -53,9 +51,6 @@ function Board({width, height, totalNumberOfMines}) {
     // Updates when a user right clicks an unopened box. Starts as the TotalNumberOfMines
     // Either NOT_STARTED, IN_PROGRESS, WON, or LOST. Used to see if the game is in progress
     const [gameResult, setGameResult] = useState(gameStatus.NOT_STARTED);
-
-    const boxesFlagged = useContext(BoxesFlaggedContext);
-    const dispatchBoxesFlagged = useContext(BoxesFlaggedDispatchContext);
 
     const minesRemaining = useContext(MinesRemainingContext);
     const dispatchMinesRemaining = useContext(MinesRemainingDispatchContext);
@@ -169,45 +164,6 @@ function Board({width, height, totalNumberOfMines}) {
             type: 'set',
             value: newValue
           });
-    }
-
-    const addFlaggedBox = (id) => {
-        dispatchBoxesFlagged({
-            type: 'add',
-            id: id
-        })
-    }
-
-    const removeFlaggedBox = (id) => {
-        dispatchBoxesFlagged({
-            type: 'remove',
-            id: id
-        })
-    }
-
-    const setBoxesFlagged = (newValue) => {
-        dispatchBoxesFlagged({
-            type: 'set',
-            value: newValue
-        })
-    }
-
-    // Updates minesRemaining count and boxesFlagged array
-    const rightClickOnBox = (id) => {
-        if (boxesFlagged.includes(id))
-        {
-            // Remove it from the array
-            // setMinesRemaining(previousState => Math.min(previousState + 1, TotalNumberOfMines))
-            incrementMinesRemaining();
-            removeFlaggedBox(id);
-        }
-        else
-        {
-            // Add it to the array
-            // setMinesRemaining(previousState => Math.min(previousState - 1, TotalNumberOfMines))
-            decrementMinesReamining();
-            addFlaggedBox(id);
-        }
     }
 
     const getAdjacentBoxes = (firstClickId, height, width) => {
@@ -408,11 +364,7 @@ function Board({width, height, totalNumberOfMines}) {
             {
                 const boxId = `${_height*Width + _width}`;
                 let isClicked
-                if (boxesFlagged.includes(boxId))
-                {
-                    isClicked = FLAGGED
-                }
-                else if (BoxesClicked.includes(boxId))
+                if (BoxesClicked.includes(boxId))
                 {
                     isClicked = CLICKED
                 }
@@ -453,7 +405,6 @@ function Board({width, height, totalNumberOfMines}) {
                     setNumberOfMineNeighborsByBoxId({})
                     setWidth(mapDifficultyToGameSettings[e.target.value]['_width'])
                     setHeight(mapDifficultyToGameSettings[e.target.value]['_height'])
-                    setBoxesFlagged([])
                 }}>
                     <option value="Beginner">Beginner</option>
                     <option value="Intermediate">Intermediate</option>
@@ -467,7 +418,6 @@ function Board({width, height, totalNumberOfMines}) {
                     setBoxesClicked([])
                     setNeighborsOfBoxById({})
                     setNumberOfMineNeighborsByBoxId({})
-                    setBoxesFlagged([])
                 }}>Reset</button>
             </div>
             {<Time gameStarted={gameResult === gameStatus.IN_PROGRESS} gameOver={gameResult === gameStatus.WON || gameResult === gameStatus.LOST}/>}

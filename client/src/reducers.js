@@ -21,29 +21,6 @@ export function minesRemainingReducer(minesRemaining, action) {
     }
 }
 
-export function boxesFlaggedReducer(boxesFlagged, action) {
-    /*
-    action {
-        value: newValue to use for updating
-        maxNumberOfMines: value to use to prevent minesRemaining count from going too high
-    }
-    */
-    switch (action.type) {
-        case 'set': {
-            return action.value;
-        }
-        case 'add': {
-            return [...boxesFlagged, action.id];
-        }
-        case 'remove': {
-            return boxesFlagged.filter(boxId => boxId !== action.id);
-        }
-        default: {
-            throw Error('Unknown action: ' + action.type);
-        }
-    }
-}
-
 export function boxesClickedReducer(boxesClicked, action) {
     /*
     action {
