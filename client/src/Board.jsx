@@ -1,4 +1,4 @@
-import { useContext, useState } from 'react';
+import { useCallback, useContext, useState } from 'react';
 import Box from './Box';
 import Time from './Time';
 import { 
@@ -42,13 +42,10 @@ function Board({width, height, totalNumberOfMines}) {
     const [Width, setWidth] = useState(width);
     const [Height, setHeight] = useState(height);
     const [TotalNumberOfMines, setTotalNumberOfMines] = useState(totalNumberOfMines);
-    // Used to track if the first click has happened. Only updates on left clicks
     // Keep track of which boxes have been opened. Used to check if the game is won
     const [BoxesClicked, setBoxesClicked] = useState([]);
-    // Updates when a user right clicks an unopened box
     // Is set at the beginning of the game and remains constant
     const [MineLocations, setMineLocations] = useState([]);
-    // Updates when a user right clicks an unopened box. Starts as the TotalNumberOfMines
     // Either NOT_STARTED, IN_PROGRESS, WON, or LOST. Used to see if the game is in progress
     const [gameResult, setGameResult] = useState(gameStatus.NOT_STARTED);
 
@@ -64,14 +61,14 @@ function Board({width, height, totalNumberOfMines}) {
     const [numberOfMineNeighborsByBoxId, setNumberOfMineNeighborsByBoxId] = useState({})
 
     // Called by a box if a mine is clicked on
-    const setGameLose = () => {
+    const setGameLose = useCallback(() => {
         setGameResult(gameStatus.LOST);
-    }
+    }, [])
 
     // Called by a box to see if the game is over yet
-    const getGameResult = () => {
+    const getGameResult = useCallback(() => {
         return gameResult;
-    }
+    }, [gameResult])
 
     // Called when a box that touches no mines is clicked. Returns an array of all of the boxes that 
     // should be opened as a result
@@ -376,7 +373,7 @@ function Board({width, height, totalNumberOfMines}) {
                 const mineNeighbors = gameResult === gameStatus.NOT_STARTED ? 0 : numberOfMineNeighborsByBoxId[boxId]
                 gameBoard.push(<div id={boxId}>
                                     <Box Id={boxId} 
-                                        IsMine={isMine} 
+                                        MineLocations={MineLocations} 
                                         MineNeighbors={mineNeighbors} 
                                         HandleBoardClick={handleBoardClick} 
                                         IsClicked={isClicked}

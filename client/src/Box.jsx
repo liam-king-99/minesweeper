@@ -1,6 +1,5 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { 
-    MinesRemainingContext,
     MinesRemainingDispatchContext
 } from './contexts';
 import './Box.css'
@@ -12,7 +11,7 @@ const gameStatus = {
     NOT_STARTED: 2
 };
 
-function Box({Id, IsMine, MineNeighbors, HandleBoardClick, IsClicked, SetGameLose, GetGameResult, TotalNumberOfMines}) {
+function Box({Id, MineLocations, MineNeighbors, HandleBoardClick, IsClicked, SetGameLose, GetGameResult, TotalNumberOfMines}) {
 
     const UNCLICKED = 0;
     const CLICKED = 1;
@@ -20,22 +19,19 @@ function Box({Id, IsMine, MineNeighbors, HandleBoardClick, IsClicked, SetGameLos
 
     const boxRef = useRef(null);
 
-    const minesRemaining = useContext(MinesRemainingContext);
     const dispatchMinesRemaining = useContext(MinesRemainingDispatchContext);
 
-    const [isMine, setIsMine] = useState(IsMine);
     const [status, setStatus] = useState(IsClicked);
-    const [mineNeighbors, setMineNeighbors] = useState(MineNeighbors);
+
+    const isMine = MineLocations.includes(Id);
     
 
     useEffect(() => {
         if (IsClicked === 1 && status === FLAGGED) {
             incrementMinesRemaining();
         }
-        setIsMine(IsMine);
-        setMineNeighbors(MineNeighbors);
         setStatus(IsClicked)
-    }, [IsMine, MineNeighbors, IsClicked, TotalNumberOfMines])
+    }, [MineLocations, MineNeighbors, IsClicked, TotalNumberOfMines])
 
     const handleClick = (id) => {
         if (GetGameResult() === gameStatus.IN_PROGRESS || GetGameResult() === gameStatus.NOT_STARTED)
@@ -108,8 +104,8 @@ function Box({Id, IsMine, MineNeighbors, HandleBoardClick, IsClicked, SetGameLos
                 );
             }
             return (
-                <div className={`opened-box box count-${mineNeighbors}`} onContextMenu={(e) => e.preventDefault()}>
-                    {mineNeighbors ? mineNeighbors : ''}
+                <div className={`opened-box box count-${MineNeighbors}`} onContextMenu={(e) => e.preventDefault()}>
+                    {MineNeighbors ? MineNeighbors : ''}
                 </div>
             );
             
