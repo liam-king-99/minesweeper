@@ -7,7 +7,7 @@ const Time = ({gameStarted, gameOver}) =>
 
     useEffect(() => {
         let interval = null;
-        if (!gameStarted) {
+        if (!gameStarted && !gameOver) {
           setSecondsPassed(0)
         }
         else if (gameStarted && !gameOver) {

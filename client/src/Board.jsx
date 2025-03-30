@@ -7,7 +7,8 @@ import './Board.css';
 const gameStatus = {
     LOST: -1,
     IN_PROGRESS: 0,
-    WON: 1
+    WON: 1,
+    NOT_STARTED: 2
 };
 
 const mapDifficultyToGameSettings = {
@@ -39,7 +40,6 @@ function Board({width, height, totalNumberOfMines}) {
     const [Height, setHeight] = useState(height);
     const [TotalNumberOfMines, setTotalNumberOfMines] = useState(totalNumberOfMines);
     // Used to track if the first click has happened. Only updates on left clicks
-    const [TotalClicks, setTotalClicks] = useState(0);
     // Keep track of which boxes have been opened. Used to check if the game is won
     const [BoxesClicked, setBoxesClicked] = useState([]);
     // Updates when a user right clicks an unopened box
@@ -48,8 +48,8 @@ function Board({width, height, totalNumberOfMines}) {
     const [MineLocations, setMineLocations] = useState([]);
     // Updates when a user right clicks an unopened box. Starts as the TotalNumberOfMines
     const [MinesRemaining, dispatchMinesRemaining] = useReducer(minesRemainingReducer, totalNumberOfMines);
-    // Either IN_PROGRESS, WON, or LOST. Used to see if the game is in progress
-    const [gameResult, setGameResult] = useState(gameStatus.IN_PROGRESS);
+    // Either NOT_STARTED, IN_PROGRESS, WON, or LOST. Used to see if the game is in progress
+    const [gameResult, setGameResult] = useState(gameStatus.NOT_STARTED);
 
     // Maps IDs of boxes that don't touch any mines to all neighboring boxes
     // Used to automatically open boxes when the user opens a box that doesn't touch a mine
@@ -94,10 +94,10 @@ function Board({width, height, totalNumberOfMines}) {
 
     // Update clicks and boxes that have been opened. Only called on on a left click of an unopened box
     const handleBoardClick = (id) => {
-        if (gameResult === gameStatus.IN_PROGRESS)
+        if (gameResult === gameStatus.NOT_STARTED) setGameResult(gameStatus.IN_PROGRESS)
+        if (gameResult === gameStatus.IN_PROGRESS || gameResult === gameStatus.NOT_STARTED)
         {
             setBoxesClicked(previousState => Array.from(new Set([...previousState, id])))
-            setTotalClicks(previousState => previousState + 1);
             if (BoxesClicked.length === Height*Width - TotalNumberOfMines - 1)
             {
                 setGameResult(gameStatus.WON)
@@ -112,7 +112,7 @@ function Board({width, height, totalNumberOfMines}) {
 
     // Called when a box is opened automatically. Uses getAllBoxesToOpenOnCascade
     const clickOnBox = (id) => {
-        if (TotalClicks <= 1 || !BoxesClicked.includes(id))
+        if (!BoxesClicked.includes(id) || BoxesClicked.length === 1)
         {
             if (neighborsOfBoxById[id] && (BoxesClicked.length === 1 || !BoxesClicked.includes(id)))
             {
@@ -223,7 +223,7 @@ function Board({width, height, totalNumberOfMines}) {
     const placeMines = (firstClickId) => {
         const firstClickAdjacentBoxes = getAdjacentBoxes(firstClickId, Height, Width);
         const templateMineLocations = []
-        if (TotalClicks === 1 && MineLocations.length < TotalNumberOfMines)
+        if (gameResult === gameStatus.IN_PROGRESS && MineLocations.length < TotalNumberOfMines)
         {
             // First click happened. Generate mine locations such that first click is protected
             // Surrounding squares should be safe as well
@@ -386,7 +386,7 @@ function Board({width, height, totalNumberOfMines}) {
     // Create a table that has height rows and width columns
     const createBoard = () => 
     {
-        if (TotalClicks === 1)
+        if (BoxesClicked.length === 1)
         {
             const firstClickId = BoxesClicked[0];
             countMineNeighbors(firstClickId)
@@ -412,16 +412,18 @@ function Board({width, height, totalNumberOfMines}) {
                     isClicked = UNCLICKED
                 }
                 const isMine = MineLocations.includes(boxId)
-                const mineNeighbors = TotalClicks === 0 ? 0 : numberOfMineNeighborsByBoxId[boxId]
+                const mineNeighbors = gameResult === gameStatus.NOT_STARTED ? 0 : numberOfMineNeighborsByBoxId[boxId]
                 gameBoard.push(<div id={boxId}>
-                                <Box Id={boxId} 
-                                IsMine={isMine} 
-                                MineNeighbors={mineNeighbors} 
-                                HandleBoardClick={handleBoardClick} 
-                                IsClicked={isClicked}
-                                SetGameLose={setGameLose}
-                                GetGameResult={getGameResult}
-                                UpdateFlaggedBoxes={rightClickOnBox}/></div>);
+                                    <Box Id={boxId} 
+                                        IsMine={isMine} 
+                                        MineNeighbors={mineNeighbors} 
+                                        HandleBoardClick={handleBoardClick} 
+                                        IsClicked={isClicked}
+                                        SetGameLose={setGameLose}
+                                        GetGameResult={getGameResult}
+                                        UpdateFlaggedBoxes={rightClickOnBox}
+                                    />
+                                </div>);
             }
         }
         return gameBoard;
@@ -433,7 +435,7 @@ function Board({width, height, totalNumberOfMines}) {
             {<div className="MineCount">🚩 {MinesRemaining}</div>}
             <div className='DifficultyFormAndReset'>
                 <select defaultValue={'Intermediate'} onChange={(e) => {
-                    setGameResult(gameStatus.IN_PROGRESS)
+                    setGameResult(gameStatus.NOT_STARTED)
                     setMinesRemaining(mapDifficultyToGameSettings[e.target.value]['_totalNumberOfMines'])
                     setTotalNumberOfMines(mapDifficultyToGameSettings[e.target.value]['_totalNumberOfMines'])
                     setMineLocations([])
@@ -442,7 +444,6 @@ function Board({width, height, totalNumberOfMines}) {
                     setNumberOfMineNeighborsByBoxId({})
                     setWidth(mapDifficultyToGameSettings[e.target.value]['_width'])
                     setHeight(mapDifficultyToGameSettings[e.target.value]['_height'])
-                    setTotalClicks(0)
                     setBoxesFlagged([])
                 }}>
                     <option value="Beginner">Beginner</option>
@@ -450,8 +451,7 @@ function Board({width, height, totalNumberOfMines}) {
                     <option value="Expert">Expert</option>
                 </select>
                 <button onClick={() => {
-                    setTotalClicks(0)
-                    setGameResult(gameStatus.IN_PROGRESS)
+                    setGameResult(gameStatus.NOT_STARTED)
                     setMinesRemaining(TotalNumberOfMines)
                     setTotalNumberOfMines(TotalNumberOfMines)
                     setMineLocations([])
@@ -461,7 +461,7 @@ function Board({width, height, totalNumberOfMines}) {
                     setBoxesFlagged([])
                 }}>Reset</button>
             </div>
-            {<Time gameStarted={TotalClicks > 0} gameOver={gameResult !== gameStatus.IN_PROGRESS}/>}
+            {<Time gameStarted={gameResult === gameStatus.IN_PROGRESS} gameOver={gameResult === gameStatus.WON || gameResult === gameStatus.LOST}/>}
         </div>
         <div>
             <div className="Table" style={{display: 'grid', gridTemplateColumns: `repeat(${Width}, 38px)`, gridTemplateRows: `repeat(${Height}, 38px)`}}>

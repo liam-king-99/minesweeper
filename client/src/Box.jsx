@@ -4,7 +4,8 @@ import './Box.css'
 const gameStatus = {
     LOST: -1,
     IN_PROGRESS: 0,
-    WON: 1
+    WON: 1,
+    NOT_STARTED: 2
 };
 
 function Box({Id, IsMine, MineNeighbors, HandleBoardClick, IsClicked, SetGameLose, GetGameResult, UpdateFlaggedBoxes}) {
@@ -25,7 +26,7 @@ function Box({Id, IsMine, MineNeighbors, HandleBoardClick, IsClicked, SetGameLos
     }, [IsMine, MineNeighbors, IsClicked])
 
     const handleClick = (id) => {
-        if (GetGameResult() === gameStatus.IN_PROGRESS)
+        if (GetGameResult() === gameStatus.IN_PROGRESS || GetGameResult() === gameStatus.NOT_STARTED)
         {
             setStatus(CLICKED);
             if (isMine)
