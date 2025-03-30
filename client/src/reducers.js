@@ -1,4 +1,4 @@
-export default function minesRemainingReducer(minesRemaining, action) {
+export function minesRemainingReducer(minesRemaining, action) {
     /*
     action {
         value: newValue to use for updating
@@ -9,14 +9,37 @@ export default function minesRemainingReducer(minesRemaining, action) {
         case 'set': {
             return action.value;
         }
-      case 'increment': {
-        return Math.min(minesRemaining + 1, action.maxNumberOfMines);
-      }
-      case 'decrement': {
-        return Math.min(minesRemaining - 1, action.maxNumberOfMines);
-      }
-      default: {
-        throw Error('Unknown action: ' + action.type);
-      }
+        case 'increment': {
+            return Math.min(minesRemaining + 1, action.maxNumberOfMines);
+        }
+        case 'decrement': {
+            return Math.min(minesRemaining - 1, action.maxNumberOfMines);
+        }
+        default: {
+            throw Error('Unknown action: ' + action.type);
+        }
     }
-  }
+}
+
+export function boxesFlaggedReducer(boxesFlagged, action) {
+    /*
+    action {
+        value: newValue to use for updating
+        maxNumberOfMines: value to use to prevent minesRemaining count from going too high
+    }
+    */
+    switch (action.type) {
+        case 'set': {
+            return action.value;
+        }
+        case 'add': {
+            return [...boxesFlagged, action.id];
+        }
+        case 'remove': {
+            return boxesFlagged.filter(boxId => boxId !== action.id);
+        }
+        default: {
+            throw Error('Unknown action: ' + action.type);
+        }
+    }
+}

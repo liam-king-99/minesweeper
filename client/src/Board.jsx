@@ -1,7 +1,7 @@
 import { useReducer, useState } from 'react';
 import Box from './Box';
 import Time from './Time';
-import minesRemainingReducer from './reducers';
+import { boxesFlaggedReducer, minesRemainingReducer } from './reducers';
 import './Board.css';
 
 const gameStatus = {
@@ -43,7 +43,7 @@ function Board({width, height, totalNumberOfMines}) {
     // Keep track of which boxes have been opened. Used to check if the game is won
     const [BoxesClicked, setBoxesClicked] = useState([]);
     // Updates when a user right clicks an unopened box
-    const [BoxesFlagged, setBoxesFlagged] = useState([])
+    const [BoxesFlagged, dispatchBoxesFlagged] = useReducer(boxesFlaggedReducer, []);
     // Is set at the beginning of the game and remains constant
     const [MineLocations, setMineLocations] = useState([]);
     // Updates when a user right clicks an unopened box. Starts as the TotalNumberOfMines
@@ -162,6 +162,27 @@ function Board({width, height, totalNumberOfMines}) {
           });
     }
 
+    const addFlaggedBox = (id) => {
+        dispatchBoxesFlagged({
+            type: 'add',
+            id: id
+        })
+    }
+
+    const removeFlaggedBox = (id) => {
+        dispatchBoxesFlagged({
+            type: 'remove',
+            id: id
+        })
+    }
+
+    const setBoxesFlagged = (newValue) => {
+        dispatchBoxesFlagged({
+            type: 'set',
+            value: newValue
+        })
+    }
+
     // Updates minesRemaining count and boxesFlagged array
     const rightClickOnBox = (id) => {
         if (BoxesFlagged.includes(id))
@@ -169,14 +190,14 @@ function Board({width, height, totalNumberOfMines}) {
             // Remove it from the array
             // setMinesRemaining(previousState => Math.min(previousState + 1, TotalNumberOfMines))
             incrementMinesRemaining();
-            setBoxesFlagged(previousState => previousState.filter(boxId => boxId !== id))
+            removeFlaggedBox(id);
         }
         else
         {
             // Add it to the array
             // setMinesRemaining(previousState => Math.min(previousState - 1, TotalNumberOfMines))
             decrementMinesReamining();
-            setBoxesFlagged(previousState => [...previousState, id])
+            addFlaggedBox(id);
         }
     }
 
