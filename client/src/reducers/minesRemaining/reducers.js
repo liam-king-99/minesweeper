@@ -21,25 +21,24 @@ export function minesRemainingReducer(minesRemaining, action) {
     }
 }
 
-export function boxesClickedReducer(boxesClicked, action) {
-    /*
-    action {
-        value: newValue to use for updating
-        maxNumberOfMines: value to use to prevent minesRemaining count from going too high
-    }
-    */
-    switch (action.type) {
-        case 'set': {
-            return action.value;
-        }
-        case 'addSingle': {
-            return Array.from(new Set([...boxesClicked, action.value]));
-        }
-        case 'addArray': {
-            return Array.from(new Set([...boxesClicked, ...action.value]));
-        }
-        default: {
-            throw Error('Unknown action: ' + action.type);
-        }
-    }
+export const incrementMinesRemaining = (dispatch, TotalNumberOfMines) => {
+    dispatch({
+        type: 'increment',
+        maxNumberOfMines: TotalNumberOfMines
+      });
 }
+
+export const decrementMinesReamining = (dispatch, TotalNumberOfMines) => {
+    dispatch({
+        type: 'decrement',
+        maxNumberOfMines: TotalNumberOfMines
+      });
+}
+
+export const setMinesRemaining = (dispatch, newValue) => {
+    dispatch({
+        type: 'set',
+        value: newValue
+      });
+}
+

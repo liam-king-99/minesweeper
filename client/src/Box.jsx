@@ -3,13 +3,8 @@ import {
     MinesRemainingDispatchContext
 } from './contexts';
 import './Box.css'
-
-const gameStatus = {
-    LOST: -1,
-    IN_PROGRESS: 0,
-    WON: 1,
-    NOT_STARTED: 2
-};
+import { incrementMinesRemaining, decrementMinesReamining } from './reducers/minesRemaining/reducers';
+import { gameStatus } from './constants';
 
 function Box({Id, MineLocations, MineNeighbors, HandleBoardClick, IsClicked, SetGameLose, GetGameResult, TotalNumberOfMines}) {
 
@@ -28,7 +23,7 @@ function Box({Id, MineLocations, MineNeighbors, HandleBoardClick, IsClicked, Set
 
     useEffect(() => {
         if (IsClicked === 1 && status === FLAGGED) {
-            incrementMinesRemaining();
+            incrementMinesRemaining(dispatchMinesRemaining, TotalNumberOfMines);
         }
         setStatus(IsClicked)
     }, [MineLocations, MineNeighbors, IsClicked, TotalNumberOfMines])
@@ -47,31 +42,17 @@ function Box({Id, MineLocations, MineNeighbors, HandleBoardClick, IsClicked, Set
         
     }
 
-    const decrementMinesReamining = () => {
-        dispatchMinesRemaining({
-            type: 'decrement',
-            maxNumberOfMines: TotalNumberOfMines
-          });
-    }
-
-    const incrementMinesRemaining = () => {
-        dispatchMinesRemaining({
-            type: 'increment',
-            maxNumberOfMines: TotalNumberOfMines
-          });
-    }
-
     // Updates minesRemaining count
     const rightClickOnBox = (id) => {
         if (status === FLAGGED)
         {
             setStatus(UNCLICKED)
-            incrementMinesRemaining();
+            incrementMinesRemaining(dispatchMinesRemaining, TotalNumberOfMines);
         }
         else if (status === UNCLICKED)
         {
             setStatus(FLAGGED)
-            decrementMinesReamining();
+            decrementMinesReamining(dispatchMinesRemaining, TotalNumberOfMines);
         }
     }
 

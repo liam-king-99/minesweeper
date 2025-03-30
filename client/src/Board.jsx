@@ -1,60 +1,24 @@
 import { useCallback, useContext, useState } from 'react';
 import Box from './Box';
-import Time from './Time';
-import { 
-    MinesRemainingContext,
-    MinesRemainingDispatchContext
-} from './contexts';
-import './Board.css';
+import { gameStatus } from './constants';
 
-const gameStatus = {
-    LOST: -1,
-    IN_PROGRESS: 0,
-    WON: 1,
-    NOT_STARTED: 2
-};
-
-const mapDifficultyToGameSettings = {
-    "Beginner": {
-        _totalNumberOfMines: 10,
-        _width: 9,
-        _height: 9,
-    },
-    "Intermediate": {
-        _totalNumberOfMines: 40,
-        _width: 16,
-        _height: 16,
-    },
-    "Expert": {
-        _totalNumberOfMines: 99,
-        _width: 30,
-        _height: 16,
-    }
-}
-
-function Board({width, height, totalNumberOfMines}) {
+function Board({
+    Width,
+    Height,
+    TotalNumberOfMines,
+    BoxesClicked,
+    gameResult,
+    numberOfMineNeighborsByBoxId,
+    MineLocations,
+    setBoxesClicked,
+    setGameResult,
+    setNumberOfMineNeighborsByBoxId,
+    setMineLocations
+}) {
 
     const UNCLICKED = 0;
     const CLICKED = 1;
     const FLAGGED = 2;
-
-    // Width, Height, and TotalNumberOfMines stay constant unless the difficulty setting is changed 
-    const [Width, setWidth] = useState(width);
-    const [Height, setHeight] = useState(height);
-    const [TotalNumberOfMines, setTotalNumberOfMines] = useState(totalNumberOfMines);
-    // Keep track of which boxes have been opened. Used to check if the game is won
-    const [BoxesClicked, setBoxesClicked] = useState([]);
-    // Is set at the beginning of the game and remains constant
-    const [MineLocations, setMineLocations] = useState([]);
-    // Either NOT_STARTED, IN_PROGRESS, WON, or LOST. Used to see if the game is in progress
-    const [gameResult, setGameResult] = useState(gameStatus.NOT_STARTED);
-
-    const minesRemaining = useContext(MinesRemainingContext);
-    const dispatchMinesRemaining = useContext(MinesRemainingDispatchContext);
-
-    // Maps each box ID to the number of mines that touch the box. Used to display a number 
-    // when a box is opened. A key being absent means it touches 0 mines
-    const [numberOfMineNeighborsByBoxId, setNumberOfMineNeighborsByBoxId] = useState({})
 
     // Called by a box if a mine is clicked on
     const setGameLose = useCallback(() => {
@@ -141,13 +105,6 @@ function Board({width, height, totalNumberOfMines}) {
 
         }
         
-    }
-    
-    const setMinesRemaining = (newValue) => {
-        dispatchMinesRemaining({
-            type: 'set',
-            value: newValue
-          });
     }
 
     const getAdjacentBoxes = (firstClickId, height, width) => {
@@ -245,42 +202,14 @@ function Board({width, height, totalNumberOfMines}) {
     }
 
     return (
-    <div className="Game">
-        <div id="MinesAndTime">
-            {<div className="MineCount">🚩 {minesRemaining}</div>}
-            <div className='DifficultyFormAndReset'>
-                <select defaultValue={'Intermediate'} onChange={(e) => {
-                    setGameResult(gameStatus.NOT_STARTED)
-                    setMinesRemaining(mapDifficultyToGameSettings[e.target.value]['_totalNumberOfMines'])
-                    setTotalNumberOfMines(mapDifficultyToGameSettings[e.target.value]['_totalNumberOfMines'])
-                    setMineLocations([])
-                    setBoxesClicked([])
-                    setNumberOfMineNeighborsByBoxId({})
-                    setWidth(mapDifficultyToGameSettings[e.target.value]['_width'])
-                    setHeight(mapDifficultyToGameSettings[e.target.value]['_height'])
-                }}>
-                    <option value="Beginner">Beginner</option>
-                    <option value="Intermediate">Intermediate</option>
-                    <option value="Expert">Expert</option>
-                </select>
-                <button onClick={() => {
-                    setGameResult(gameStatus.NOT_STARTED)
-                    setMinesRemaining(TotalNumberOfMines)
-                    setTotalNumberOfMines(TotalNumberOfMines)
-                    setMineLocations([])
-                    setBoxesClicked([])
-                    setNumberOfMineNeighborsByBoxId({})
-                }}>Reset</button>
-            </div>
-            {<Time gameStarted={gameResult === gameStatus.IN_PROGRESS} gameOver={gameResult === gameStatus.WON || gameResult === gameStatus.LOST}/>}
-        </div>
+    <>
         <div>
             <div className="Table" style={{display: 'grid', gridTemplateColumns: `repeat(${Width}, 38px)`, gridTemplateRows: `repeat(${Height}, 38px)`}}>
                 {createBoard()}
             </div>
         </div>
         {gameResult === gameStatus.WON ? <h2 className='centeredText'>Victory</h2> : gameResult === gameStatus.LOST ? <h2 className='centeredText'>Defeat</h2> : <></>}
-    </div>
+    </>
     );
 }
 
