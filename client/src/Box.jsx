@@ -1,4 +1,10 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
+import { 
+    BoxesFlaggedContext,
+    BoxesFlaggedDispatchContext,
+    MinesRemainingContext,
+    MinesRemainingDispatchContext
+} from './contexts';
 import './Box.css'
 
 const gameStatus = {
@@ -8,16 +14,23 @@ const gameStatus = {
     NOT_STARTED: 2
 };
 
-function Box({Id, IsMine, MineNeighbors, HandleBoardClick, IsClicked, SetGameLose, GetGameResult, UpdateFlaggedBoxes}) {
+function Box({Id, IsMine, MineNeighbors, HandleBoardClick, IsClicked, SetGameLose, GetGameResult, TotalNumberOfMines}) {
 
     const UNCLICKED = 0;
     const CLICKED = 1;
 
     const boxRef = useRef(null);
 
+    const boxesFlagged = useContext(BoxesFlaggedContext);
+    const dispatchBoxesFlagged = useContext(BoxesFlaggedDispatchContext);
+
+    const minesRemaining = useContext(MinesRemainingContext);
+    const dispatchMinesRemaining = useContext(MinesRemainingDispatchContext);
+
     const [isMine, setIsMine] = useState(IsMine);
     const [status, setStatus] = useState(IsClicked);
     const [mineNeighbors, setMineNeighbors] = useState(MineNeighbors);
+    
 
     useEffect(() => {
         setIsMine(IsMine);
@@ -39,11 +52,64 @@ function Box({Id, IsMine, MineNeighbors, HandleBoardClick, IsClicked, SetGameLos
         
     }
 
+    const decrementMinesReamining = () => {
+        dispatchMinesRemaining({
+            type: 'decrement',
+            maxNumberOfMines: TotalNumberOfMines
+          });
+    }
+
+    const incrementMinesRemaining = () => {
+        dispatchMinesRemaining({
+            type: 'increment',
+            maxNumberOfMines: TotalNumberOfMines
+          });
+    }
+
+    const addFlaggedBox = (id) => {
+        dispatchBoxesFlagged({
+            type: 'add',
+            id: id
+        })
+    }
+
+    const removeFlaggedBox = (id) => {
+        dispatchBoxesFlagged({
+            type: 'remove',
+            id: id
+        })
+    }
+
+    const setBoxesFlagged = (newValue) => {
+        dispatchBoxesFlagged({
+            type: 'set',
+            value: newValue
+        })
+    }
+
+    // Updates minesRemaining count and boxesFlagged array
+    const rightClickOnBox = (id) => {
+        if (boxesFlagged.includes(id))
+        {
+            // Remove it from the array
+            // setMinesRemaining(previousState => Math.min(previousState + 1, TotalNumberOfMines))
+            incrementMinesRemaining();
+            removeFlaggedBox(id);
+        }
+        else
+        {
+            // Add it to the array
+            // setMinesRemaining(previousState => Math.min(previousState - 1, TotalNumberOfMines))
+            decrementMinesReamining();
+            addFlaggedBox(id);
+        }
+    }
+
     const handleRightClick = (event) => {
         event.preventDefault();
         if (GetGameResult() === gameStatus.IN_PROGRESS)
         {
-            UpdateFlaggedBoxes(Id.toString())
+            rightClickOnBox(Id.toString())
         }
         
     }

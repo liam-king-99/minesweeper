@@ -1,7 +1,12 @@
-import { useReducer, useState } from 'react';
+import { useContext, useState } from 'react';
 import Box from './Box';
 import Time from './Time';
-import { boxesFlaggedReducer, minesRemainingReducer } from './reducers';
+import { 
+    BoxesFlaggedContext,
+    BoxesFlaggedDispatchContext,
+    MinesRemainingContext,
+    MinesRemainingDispatchContext
+} from './contexts';
 import './Board.css';
 
 const gameStatus = {
@@ -43,13 +48,17 @@ function Board({width, height, totalNumberOfMines}) {
     // Keep track of which boxes have been opened. Used to check if the game is won
     const [BoxesClicked, setBoxesClicked] = useState([]);
     // Updates when a user right clicks an unopened box
-    const [BoxesFlagged, dispatchBoxesFlagged] = useReducer(boxesFlaggedReducer, []);
     // Is set at the beginning of the game and remains constant
     const [MineLocations, setMineLocations] = useState([]);
     // Updates when a user right clicks an unopened box. Starts as the TotalNumberOfMines
-    const [MinesRemaining, dispatchMinesRemaining] = useReducer(minesRemainingReducer, totalNumberOfMines);
     // Either NOT_STARTED, IN_PROGRESS, WON, or LOST. Used to see if the game is in progress
     const [gameResult, setGameResult] = useState(gameStatus.NOT_STARTED);
+
+    const boxesFlagged = useContext(BoxesFlaggedContext);
+    const dispatchBoxesFlagged = useContext(BoxesFlaggedDispatchContext);
+
+    const minesRemaining = useContext(MinesRemainingContext);
+    const dispatchMinesRemaining = useContext(MinesRemainingDispatchContext);
 
     // Maps IDs of boxes that don't touch any mines to all neighboring boxes
     // Used to automatically open boxes when the user opens a box that doesn't touch a mine
@@ -185,7 +194,7 @@ function Board({width, height, totalNumberOfMines}) {
 
     // Updates minesRemaining count and boxesFlagged array
     const rightClickOnBox = (id) => {
-        if (BoxesFlagged.includes(id))
+        if (boxesFlagged.includes(id))
         {
             // Remove it from the array
             // setMinesRemaining(previousState => Math.min(previousState + 1, TotalNumberOfMines))
@@ -399,7 +408,7 @@ function Board({width, height, totalNumberOfMines}) {
             {
                 const boxId = `${_height*Width + _width}`;
                 let isClicked
-                if (BoxesFlagged.includes(boxId))
+                if (boxesFlagged.includes(boxId))
                 {
                     isClicked = FLAGGED
                 }
@@ -421,7 +430,7 @@ function Board({width, height, totalNumberOfMines}) {
                                         IsClicked={isClicked}
                                         SetGameLose={setGameLose}
                                         GetGameResult={getGameResult}
-                                        UpdateFlaggedBoxes={rightClickOnBox}
+                                        TotalNumberOfMines={TotalNumberOfMines}
                                     />
                                 </div>);
             }
@@ -432,7 +441,7 @@ function Board({width, height, totalNumberOfMines}) {
     return (
     <div className="Game">
         <div id="MinesAndTime">
-            {<div className="MineCount">🚩 {MinesRemaining}</div>}
+            {<div className="MineCount">🚩 {minesRemaining}</div>}
             <div className='DifficultyFormAndReset'>
                 <select defaultValue={'Intermediate'} onChange={(e) => {
                     setGameResult(gameStatus.NOT_STARTED)

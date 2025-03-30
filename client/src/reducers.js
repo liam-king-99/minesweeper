@@ -55,8 +55,11 @@ export function boxesClickedReducer(boxesClicked, action) {
         case 'set': {
             return action.value;
         }
-        case 'add': {
-            return [...boxesClicked, action.id];
+        case 'addSingle': {
+            return Array.from(new Set([...boxesClicked, action.value]));
+        }
+        case 'addArray': {
+            return Array.from(new Set([...boxesClicked, ...action.value]));
         }
         default: {
             throw Error('Unknown action: ' + action.type);
