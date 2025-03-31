@@ -1,10 +1,10 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { 
     MinesRemainingDispatchContext
-} from './contexts';
+} from '../contexts';
 import './Box.css'
-import { incrementMinesRemaining, decrementMinesReamining } from './reducers/minesRemaining/reducers';
-import { gameStatus } from './constants';
+import { incrementMinesRemaining, decrementMinesReamining } from '../reducers/minesRemainingReducer';
+import { gameStatus } from '../constants';
 
 function Box({Id, MineLocations, MineNeighbors, HandleBoardClick, IsClicked, SetGameLose, GetGameResult, TotalNumberOfMines}) {
 

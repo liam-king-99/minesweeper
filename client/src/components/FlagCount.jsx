@@ -1,5 +1,5 @@
 import { useContext } from 'react';
-import { MinesRemainingContext } from './contexts';
+import { MinesRemainingContext } from '../contexts';
 
 const FlagCount = () => 
 {

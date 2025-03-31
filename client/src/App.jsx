@@ -1,9 +1,9 @@
-import Board from "./Board";
+import Board from "./components/Board";
 import { MinesRemainingContext, MinesRemainingDispatchContext } from "./contexts";
-import { minesRemainingReducer, setMinesRemaining } from "./reducers/minesRemaining/reducers";
+import { minesRemainingReducer, setMinesRemaining } from "./reducers/minesRemainingReducer";
 import './App.css'
 import { useReducer, useState } from "react";
-import Header from "./Header";
+import Header from "./components/Header";
 import { gameStatus, mapDifficultyToGameSettings } from "./constants";
 
 export default function App() {

@@ -1,4 +1,4 @@
-import { gameStatus } from './constants';
+import { gameStatus } from '../constants';
 import FlagCount from './FlagCount';
 import './Board.css'
 import Time from './Time';

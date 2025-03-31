@@ -1,6 +1,6 @@
-import { useCallback, useContext, useState } from 'react';
+import { useCallback } from 'react';
 import Box from './Box';
-import { gameStatus } from './constants';
+import { gameStatus } from '../constants';
 
 function Board({
     Width,
@@ -18,7 +18,6 @@ function Board({
 
     const UNCLICKED = 0;
     const CLICKED = 1;
-    const FLAGGED = 2;
 
     // Called by a box if a mine is clicked on
     const setGameLose = useCallback(() => {
