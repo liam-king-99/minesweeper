@@ -60,7 +60,7 @@ function Box({Id, MineLocations, MineNeighbors, HandleBoardClick, IsClicked, Set
         event.preventDefault();
         if (GetGameResult() === gameStatus.IN_PROGRESS)
         {
-            rightClickOnBox(Id.toString())
+            rightClickOnBox(Id)
         }
         
     }

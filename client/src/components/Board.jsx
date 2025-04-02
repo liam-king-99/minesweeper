@@ -44,7 +44,7 @@ function Board({
                     const adjacentBoxes = getAdjacentBoxes(id, Height, Width);
                     for (const neighbor of adjacentBoxes)
                     {
-                        getAllBoxesToOpenOnCascadeHelper(neighbor.toString())
+                        getAllBoxesToOpenOnCascadeHelper(neighbor)
                     }
                 }
             }
@@ -118,7 +118,7 @@ function Board({
                 {
                     if (row + rowDiff >= 0 && row + rowDiff < height && col + colDiff >= 0 && col + colDiff < width)
                     {
-                        adjacentBoxes.push(((row + rowDiff) * width + (col + colDiff) % width).toString());
+                        adjacentBoxes.push((row + rowDiff) * width + (col + colDiff) % width);
                     }
                 }
             }
@@ -137,7 +137,7 @@ function Board({
             // Surrounding squares should be safe as well
             while(templateMineLocations.length < TotalNumberOfMines)
             {
-                const newMineLocation = Math.floor(Math.random() * (Width * Height)).toString();
+                const newMineLocation = Math.floor(Math.random() * (Width * Height));
                 if (newMineLocation !== firstClickId && !templateMineLocations.includes(newMineLocation) && !firstClickAdjacentBoxes.includes(newMineLocation))
                 {
                     templateMineLocations.push(newMineLocation)
@@ -173,7 +173,7 @@ function Board({
         {
             for (let _width = 0; _width < Width; _width++)
             {
-                const boxId = `${_height*Width + _width}`;
+                const boxId = _height*Width + _width;
                 let isClicked
                 if (BoxesClicked.has(boxId))
                 {
