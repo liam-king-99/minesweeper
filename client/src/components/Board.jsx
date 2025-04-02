@@ -50,7 +50,7 @@ function Board({
             }
         }
         getAllBoxesToOpenOnCascadeHelper(id)
-        return Array.from(setOfBoxIds)
+        return setOfBoxIds
     }
 
     // Update clicks and boxes that have been opened. Only called on on a left click of an unopened box
@@ -62,8 +62,8 @@ function Board({
         }
         if (gameResult === gameStatus.IN_PROGRESS || gameResult === gameStatus.NOT_STARTED)
         {
-            setBoxesClicked(previousState => Array.from(new Set([...previousState, id])))
-            if (BoxesClicked.length === Height*Width - TotalNumberOfMines - 1)
+            setBoxesClicked(previousState => new Set([...previousState, id]))
+            if (BoxesClicked.size === Height*Width - TotalNumberOfMines - 1)
             {
                 setGameResult(gameStatus.WON)
                 return
@@ -77,28 +77,28 @@ function Board({
 
     // Called when a box is opened automatically. Uses getAllBoxesToOpenOnCascade
     const clickOnBox = (id) => {
-        if (!BoxesClicked.includes(id) || BoxesClicked.length === 1)
+        if (!BoxesClicked.has(id) || BoxesClicked.size === 1)
         {
-            if (numberOfMineNeighborsByBoxId[id] === undefined && (BoxesClicked.length === 1 || !BoxesClicked.includes(id)))
+            if (numberOfMineNeighborsByBoxId[id] === undefined && (BoxesClicked.size === 1 || !BoxesClicked.has(id)))
             {
                 const boxesToOpenOnCascade = getAllBoxesToOpenOnCascade(id)
                 setBoxesClicked(previousState =>{
-                    if (Array.from(new Set([...previousState, ...boxesToOpenOnCascade])).length === Height*Width - TotalNumberOfMines)
+                    if (new Set(previousState.union(boxesToOpenOnCascade)).size === Height*Width - TotalNumberOfMines)
                     {
                         setGameResult(gameStatus.WON)
                     }
-                    return Array.from(new Set([...previousState, ...boxesToOpenOnCascade]))
+                    return new Set(previousState.union(boxesToOpenOnCascade))
                 })
             
             }
-            else if (!BoxesClicked.includes(id))
+            else if (!BoxesClicked.has(id))
             {
                 setBoxesClicked(previousState =>{
-                    if (Array.from(new Set([...previousState, id])).length === Height*Width - TotalNumberOfMines)
+                    if (new Set([...previousState, id]).size === Height*Width - TotalNumberOfMines)
                     {
                         setGameResult(gameStatus.WON)
                     }
-                    return Array.from(new Set([...previousState, id]))
+                    return new Set([...previousState, id])
                 })
             }
 
@@ -164,9 +164,9 @@ function Board({
     // Create a table that has height rows and width columns
     const createBoard = () => 
     {
-        if (BoxesClicked.length === 1)
+        if (BoxesClicked.size === 1)
         {
-            clickOnBox(BoxesClicked[0])
+            clickOnBox(BoxesClicked.values().next().value)
         }
         const gameBoard = [];
         for (let _height = 0; _height < Height; _height++)
@@ -175,7 +175,7 @@ function Board({
             {
                 const boxId = `${_height*Width + _width}`;
                 let isClicked
-                if (BoxesClicked.includes(boxId))
+                if (BoxesClicked.has(boxId))
                 {
                     isClicked = CLICKED
                 }

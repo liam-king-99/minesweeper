@@ -14,7 +14,7 @@ export default function App() {
   const [Height, setHeight] = useState(16);
   const [TotalNumberOfMines, setTotalNumberOfMines] = useState(40);
   // Keep track of which boxes have been opened. Used to check if the game is won
-  const [BoxesClicked, setBoxesClicked] = useState([]);
+  const [BoxesClicked, setBoxesClicked] = useState(new Set());
   // Is set at the beginning of the game and remains constant
   const [MineLocations, setMineLocations] = useState([]);
   // Either NOT_STARTED, IN_PROGRESS, WON, or LOST. Used to see if the game is in progress
@@ -29,7 +29,7 @@ export default function App() {
       setGameResult(gameStatus.NOT_STARTED)
       setMinesRemaining(dispatchMinesRemaining, TotalNumberOfMines)
       setMineLocations([])
-      setBoxesClicked([])
+      setBoxesClicked(new Set())
       setNumberOfMineNeighborsByBoxId({})
   }
 
@@ -38,7 +38,7 @@ export default function App() {
     setMinesRemaining(dispatchMinesRemaining, mapDifficultyToGameSettings[e.target.value]['_totalNumberOfMines'])
     setTotalNumberOfMines(mapDifficultyToGameSettings[e.target.value]['_totalNumberOfMines'])
     setMineLocations([])
-    setBoxesClicked([])
+    setBoxesClicked(new Set())
     setNumberOfMineNeighborsByBoxId({})
     setWidth(mapDifficultyToGameSettings[e.target.value]['_width'])
     setHeight(mapDifficultyToGameSettings[e.target.value]['_height'])
