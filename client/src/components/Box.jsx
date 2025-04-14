@@ -42,25 +42,20 @@ function Box({Id, MineLocations, MineNeighbors, HandleBoardClick, IsClicked, Set
         
     }
 
-    // Updates minesRemaining count
-    const rightClickOnBox = (id) => {
-        if (status === FLAGGED)
-        {
-            setStatus(UNCLICKED)
-            incrementMinesRemaining(dispatchMinesRemaining, TotalNumberOfMines);
-        }
-        else if (status === UNCLICKED)
-        {
-            setStatus(FLAGGED)
-            decrementMinesReamining(dispatchMinesRemaining, TotalNumberOfMines);
-        }
-    }
-
     const handleRightClick = (event) => {
         event.preventDefault();
         if (GetGameResult() === gameStatus.IN_PROGRESS)
         {
-            rightClickOnBox(Id)
+            if (status === FLAGGED)
+                {
+                    setStatus(UNCLICKED)
+                    incrementMinesRemaining(dispatchMinesRemaining, TotalNumberOfMines);
+                }
+                else if (status === UNCLICKED)
+                {
+                    setStatus(FLAGGED)
+                    decrementMinesReamining(dispatchMinesRemaining, TotalNumberOfMines);
+                }
         }
         
     }
@@ -80,7 +75,7 @@ function Box({Id, MineLocations, MineNeighbors, HandleBoardClick, IsClicked, Set
             {
                 return (
                     <div className="mine-box box" onContextMenu={(e) => e.preventDefault()}>
-                        X
+                        💣
                     </div>
                 );
             }
@@ -93,7 +88,7 @@ function Box({Id, MineLocations, MineNeighbors, HandleBoardClick, IsClicked, Set
         default:
             return (
                 <div className="flagged-box box" id={Id} onContextMenu={handleRightClick}>
-                    ?
+                    🚩
                 </div>
             );
     }

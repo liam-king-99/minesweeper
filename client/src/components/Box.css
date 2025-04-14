@@ -17,7 +17,8 @@
 }
 
 .flagged-box {
-    color: black
+    color: black;
+    font-size: 24px
 }
 
 .opened-box {
@@ -27,7 +28,8 @@
 }
 
 .mine-box {
-    color: black
+    color: black;
+    font-size: 24px;
 }
 
 .unopened-box {
