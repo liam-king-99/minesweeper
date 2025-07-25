@@ -158,53 +158,40 @@ function Board({
         }
         setNumberOfMineNeighborsByBoxId(templateNumberOfMineNeighborsByBoxId)
         setMineLocations(templateMineLocations)
-        return templateMineLocations
-    }
-
-    // Create a table that has height rows and width columns
-    const createBoard = () => 
-    {
-        if (BoxesClicked.size === 1)
-        {
-            clickOnBox(BoxesClicked.values().next().value)
-        }
-        const gameBoard = [];
-        for (let _height = 0; _height < Height; _height++)
-        {
-            for (let _width = 0; _width < Width; _width++)
-            {
-                const boxId = _height*Width + _width;
-                let isClicked
-                if (BoxesClicked.has(boxId))
-                {
-                    isClicked = CLICKED
-                }
-                else
-                {
-                    isClicked = UNCLICKED
-                }
-                const mineNeighbors = gameResult === gameStatus.NOT_STARTED ? 0 : numberOfMineNeighborsByBoxId[boxId] ?? 0
-                gameBoard.push(<div id={boxId}>
-                                    <Box Id={boxId} 
-                                        MineLocations={MineLocations} 
-                                        MineNeighbors={mineNeighbors} 
-                                        HandleBoardClick={handleBoardClick} 
-                                        IsClicked={isClicked}
-                                        SetGameLose={setGameLose}
-                                        GetGameResult={getGameResult}
-                                        TotalNumberOfMines={TotalNumberOfMines}
-                                    />
-                                </div>);
-            }
-        }
-        return gameBoard;
     }
 
     return (
     <>
         <div>
             <div className="Table" style={{display: 'grid', gridTemplateColumns: `repeat(${Width}, 38px)`, gridTemplateRows: `repeat(${Height}, 38px)`}}>
-                {createBoard()}
+                {(() => {
+                    if (BoxesClicked.size === 1)
+                    {
+                        clickOnBox(BoxesClicked.values().next().value)
+                    }
+                    const gameBoard = [];
+                    Array.from({length: Height}, (_, _height) =>
+                        {
+                            Array.from({length: Width}, (_, _width) => 
+                            {
+                                const boxId = _height*Width + _width;
+                                const isClicked = BoxesClicked.has(boxId) ? CLICKED : UNCLICKED
+                                const mineNeighbors = gameResult === gameStatus.NOT_STARTED ? 0 : numberOfMineNeighborsByBoxId[boxId] ?? 0
+                                gameBoard.push(<div id={boxId}>
+                                                    <Box Id={boxId} 
+                                                        MineLocations={MineLocations} 
+                                                        MineNeighbors={mineNeighbors} 
+                                                        HandleBoardClick={handleBoardClick} 
+                                                        IsClicked={isClicked}
+                                                        SetGameLose={setGameLose}
+                                                        GetGameResult={getGameResult}
+                                                        TotalNumberOfMines={TotalNumberOfMines}
+                                                    />
+                                                </div>);
+                            })
+                        })
+                    return gameBoard
+                })()}
             </div>
         </div>
         {gameResult === gameStatus.WON ? <h2 className='centeredText'>Victory</h2> : gameResult === gameStatus.LOST ? <h2 className='centeredText'>Defeat</h2> : <></>}
