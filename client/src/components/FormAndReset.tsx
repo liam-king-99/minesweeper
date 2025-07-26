@@ -1,6 +1,11 @@
 import './Board.css'
 
-const FormAndReset = ({ resetHandler, formChangeHandler }) => 
+export interface FormAndResetProps {
+    resetHandler: () => void,
+    formChangeHandler: () => void
+}
+
+const FormAndReset = ({ resetHandler, formChangeHandler }: FormAndResetProps) => 
 {
 
     return (
