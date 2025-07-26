@@ -1,17 +1,16 @@
 import { useCallback, useContext } from 'react';
 import Box from './Box';
 import { gameStatus } from '../constants';
-import { MineLocationsContext, MineLocationsDispatchContext, MinesRemainingContext } from '../contexts';
+import { BoxesClickedContext, BoxesClickedDispatchContext, MineLocationsContext, MineLocationsDispatchContext } from '../contexts';
 import { setMineLocations } from '../reducers/mineLocationsReducer';
+import { addManyBoxes, addOneBox } from '../reducers/boxesClickedReducer';
 
 function Board({
     Width,
     Height,
     TotalNumberOfMines,
-    BoxesClicked,
     gameResult,
     numberOfMineNeighborsByBoxId,
-    setBoxesClicked,
     setGameResult,
     setNumberOfMineNeighborsByBoxId,
 }) {
@@ -19,17 +18,25 @@ function Board({
     const UNCLICKED = 0;
     const CLICKED = 1;
 
+    const boxesClicked = useContext(BoxesClickedContext);
+    const dispatchBoxesClicked = useContext(BoxesClickedDispatchContext)
+
     const MineLocations = useContext(MineLocationsContext);
     const dispatchMineLocations = useContext(MineLocationsDispatchContext);
+
+    if (boxesClicked.size === Height*Width - TotalNumberOfMines)
+    {
+        setGameResult(gameStatus.WON)
+    }
 
     // Called by a box if a mine is clicked on
     const setGameLose = useCallback(() => {
         setGameResult(gameStatus.LOST);
-    }, [])
+    }, [setGameResult])
 
     // Called when a box that touches no mines is clicked. Returns an array of all of the boxes that 
     // should be opened as a result
-    const getAllBoxesToOpenOnCascade = (id, numberOfMineNeighborsByBoxId=numberOfMineNeighborsByBoxId) => 
+    const getAllBoxesToOpenOnCascade = (id, NumberOfMineNeighborsByBoxId=numberOfMineNeighborsByBoxId) => 
     {
         let setOfBoxIds = new Set()
         const getAllBoxesToOpenOnCascadeHelper = (id) =>
@@ -37,7 +44,7 @@ function Board({
             if (!setOfBoxIds.has(id))
             {
                 setOfBoxIds.add(id)
-                if (numberOfMineNeighborsByBoxId[id] === undefined)
+                if (NumberOfMineNeighborsByBoxId[id] === undefined)
                 {
                     const adjacentBoxes = getAdjacentBoxes(id, Height, Width);
                     for (const neighbor of adjacentBoxes)
@@ -59,14 +66,9 @@ function Board({
             const NumberOfMineNeighborsByBoxId = placeMines(id)
             clickOnBox(id, NumberOfMineNeighborsByBoxId)
         }
-        else if (gameResult === gameStatus.IN_PROGRESS || gameResult === gameStatus.NOT_STARTED)
+        else
         {
-            setBoxesClicked(previousState => new Set([...previousState, id]))
-            if (BoxesClicked.size === Height*Width - TotalNumberOfMines - 1)
-            {
-                setGameResult(gameStatus.WON)
-                return
-            }
+            addOneBox(dispatchBoxesClicked, id)
             if (Object.keys(numberOfMineNeighborsByBoxId).length > 0 && numberOfMineNeighborsByBoxId[id] === undefined)
             {
                 clickOnBox(id)
@@ -76,33 +78,16 @@ function Board({
 
     // Called when a box is opened automatically. Uses getAllBoxesToOpenOnCascade
     const clickOnBox = (id, NumberOfMineNeighborsByBoxId=numberOfMineNeighborsByBoxId) => {
-        if (!BoxesClicked.has(id) || BoxesClicked.size === 1)
+        if (NumberOfMineNeighborsByBoxId[id] === undefined)
         {
-            if (NumberOfMineNeighborsByBoxId[id] === undefined && (BoxesClicked.size === 1 || !BoxesClicked.has(id)))
-            {
-                const boxesToOpenOnCascade = getAllBoxesToOpenOnCascade(id, NumberOfMineNeighborsByBoxId)
-                setBoxesClicked(previousState =>{
-                    if (new Set(previousState.union(boxesToOpenOnCascade)).size === Height*Width - TotalNumberOfMines)
-                    {
-                        setGameResult(gameStatus.WON)
-                    }
-                    return new Set(previousState.union(boxesToOpenOnCascade))
-                })
-            
-            }
-            else if (!BoxesClicked.has(id))
-            {
-                setBoxesClicked(previousState =>{
-                    if (new Set([...previousState, id]).size === Height*Width - TotalNumberOfMines)
-                    {
-                        setGameResult(gameStatus.WON)
-                    }
-                    return new Set([...previousState, id])
-                })
-            }
-
-        }
+            const boxesToOpenOnCascade = getAllBoxesToOpenOnCascade(id, NumberOfMineNeighborsByBoxId)
+            addManyBoxes(dispatchBoxesClicked, boxesToOpenOnCascade)
         
+        }
+        else
+        {
+            addOneBox(dispatchBoxesClicked, id);
+        }
     }
 
     const getAdjacentBoxes = (firstClickId, height, width) => {
@@ -171,7 +156,7 @@ function Board({
                             Array.from({length: Width}, (_, _width) => 
                             {
                                 const boxId = _height*Width + _width;
-                                const isClicked = BoxesClicked.has(boxId) ? CLICKED : UNCLICKED
+                                const isClicked = boxesClicked.has(boxId) ? CLICKED : UNCLICKED
                                 const mineNeighbors = gameResult === gameStatus.NOT_STARTED ? 0 : numberOfMineNeighborsByBoxId[boxId] ?? 0
                                 gameBoard.push(<div id={boxId}>
                                                     <Box Id={boxId} 
