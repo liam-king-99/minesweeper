@@ -29,7 +29,7 @@ function Board({
 
     // Called when a box that touches no mines is clicked. Returns an array of all of the boxes that 
     // should be opened as a result
-    const getAllBoxesToOpenOnCascade = (id) => 
+    const getAllBoxesToOpenOnCascade = (id, numberOfMineNeighborsByBoxId=numberOfMineNeighborsByBoxId) => 
     {
         let setOfBoxIds = new Set()
         const getAllBoxesToOpenOnCascadeHelper = (id) =>
@@ -56,9 +56,10 @@ function Board({
         if (gameResult === gameStatus.NOT_STARTED)
         {
             setGameResult(gameStatus.IN_PROGRESS)
-            placeMines(id)
+            const NumberOfMineNeighborsByBoxId = placeMines(id)
+            clickOnBox(id, NumberOfMineNeighborsByBoxId)
         }
-        if (gameResult === gameStatus.IN_PROGRESS || gameResult === gameStatus.NOT_STARTED)
+        else if (gameResult === gameStatus.IN_PROGRESS || gameResult === gameStatus.NOT_STARTED)
         {
             setBoxesClicked(previousState => new Set([...previousState, id]))
             if (BoxesClicked.size === Height*Width - TotalNumberOfMines - 1)
@@ -74,12 +75,12 @@ function Board({
     }
 
     // Called when a box is opened automatically. Uses getAllBoxesToOpenOnCascade
-    const clickOnBox = (id) => {
+    const clickOnBox = (id, NumberOfMineNeighborsByBoxId=numberOfMineNeighborsByBoxId) => {
         if (!BoxesClicked.has(id) || BoxesClicked.size === 1)
         {
-            if (numberOfMineNeighborsByBoxId[id] === undefined && (BoxesClicked.size === 1 || !BoxesClicked.has(id)))
+            if (NumberOfMineNeighborsByBoxId[id] === undefined && (BoxesClicked.size === 1 || !BoxesClicked.has(id)))
             {
-                const boxesToOpenOnCascade = getAllBoxesToOpenOnCascade(id)
+                const boxesToOpenOnCascade = getAllBoxesToOpenOnCascade(id, NumberOfMineNeighborsByBoxId)
                 setBoxesClicked(previousState =>{
                     if (new Set(previousState.union(boxesToOpenOnCascade)).size === Height*Width - TotalNumberOfMines)
                     {
@@ -156,6 +157,7 @@ function Board({
         }
         setMineLocations(dispatchMineLocations, templateMineLocations);
         setNumberOfMineNeighborsByBoxId(templateNumberOfMineNeighborsByBoxId)
+        return templateNumberOfMineNeighborsByBoxId
     }
 
     return (
@@ -163,10 +165,6 @@ function Board({
         <div>
             <div className="Table" style={{display: 'grid', gridTemplateColumns: `repeat(${Width}, 38px)`, gridTemplateRows: `repeat(${Height}, 38px)`}}>
                 {(() => {
-                    if (BoxesClicked.size === 1)
-                    {
-                        clickOnBox(BoxesClicked.values().next().value)
-                    }
                     const gameBoard = [];
                     Array.from({length: Height}, (_, _height) =>
                         {
