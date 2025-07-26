@@ -4,7 +4,13 @@ import './Board.css'
 import Time from './Time';
 import FormAndReset from './FormAndReset';
 
-const Header = ({ resetHandler, formChangeHandler, gameResult }) => 
+export interface HeaderProps {
+    resetHandler: () => void,
+    formChangeHandler: () => void,
+    gameResult: Number
+}
+
+const Header = ({ resetHandler, formChangeHandler, gameResult }: HeaderProps) => 
 {
 
     return (

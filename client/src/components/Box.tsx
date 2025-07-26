@@ -1,21 +1,31 @@
-import React, { useContext, useEffect, useState } from 'react';
+import { type Context, type Dispatch, type MouseEvent, useContext, useEffect, useState } from 'react';
 import { 
     MineLocationsContext,
     MinesRemainingDispatchContext
 } from '../contexts';
 import './Box.css'
-import { incrementMinesRemaining, decrementMinesReamining } from '../reducers/minesRemainingReducer';
+import { incrementMinesRemaining, decrementMinesReamining, type MinesRemainingAction } from '../reducers/minesRemainingReducer';
 import { gameStatus } from '../constants';
 
-function Box({Id, MineNeighbors, HandleBoardClick, IsClicked, SetGameLose, TotalNumberOfMines, gameResult}) {
+export interface BoxProps {
+    Id: number,
+    MineNeighbors: number,
+    HandleBoardClick: (id: number) => void,
+    IsClicked: number,
+    SetGameLose: () => void,
+    TotalNumberOfMines: number,
+    gameResult: number
+}
+
+function Box({Id, MineNeighbors, HandleBoardClick, IsClicked, SetGameLose, TotalNumberOfMines, gameResult}: BoxProps) {
 
     const UNCLICKED = 0;
     const CLICKED = 1;
     const FLAGGED = 2;
 
 
-    const MineLocations = useContext(MineLocationsContext);
-    const dispatchMinesRemaining = useContext(MinesRemainingDispatchContext);
+    const MineLocations: number[] = useContext(MineLocationsContext);
+    const dispatchMinesRemaining: Dispatch<MinesRemainingAction> = useContext(MinesRemainingDispatchContext);
 
     const [status, setStatus] = useState(IsClicked);
 
@@ -41,7 +51,7 @@ function Box({Id, MineNeighbors, HandleBoardClick, IsClicked, SetGameLose, Total
         HandleBoardClick(Id);
     }
 
-    const handleRightClick = (event) => {
+    const handleRightClick = (event: MouseEvent) => {
         event.preventDefault();
         if (gameResult === gameStatus.IN_PROGRESS)
         {
@@ -64,7 +74,7 @@ function Box({Id, MineNeighbors, HandleBoardClick, IsClicked, SetGameLose, Total
             return (
                 <div 
                     className="unopened-box box"
-                    id={Id} onClick={isGameInProgress ? handleClick : undefined}
+                    id={`${Id}`} onClick={isGameInProgress ? handleClick : undefined}
                     onContextMenu={handleRightClick}
                 />
             );
@@ -85,7 +95,7 @@ function Box({Id, MineNeighbors, HandleBoardClick, IsClicked, SetGameLose, Total
             
         default:
             return (
-                <div className="flagged-box box" id={Id} onContextMenu={handleRightClick}>
+                <div className="flagged-box box" id={`${Id}`} onContextMenu={handleRightClick}>
                     🚩
                 </div>
             );
