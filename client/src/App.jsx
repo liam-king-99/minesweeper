@@ -1,13 +1,16 @@
 import Board from "./components/Board";
-import { MinesRemainingContext, MinesRemainingDispatchContext } from "./contexts";
+import { MineLocationsContext, MineLocationsDispatchContext,  MinesRemainingContext, MinesRemainingDispatchContext } from "./contexts";
 import { minesRemainingReducer, setMinesRemaining } from "./reducers/minesRemainingReducer";
+import { resetMineLocations } from "./reducers/mineLocationsReducer";
 import './App.css'
 import { useReducer, useState } from "react";
 import Header from "./components/Header";
 import { gameStatus, mapDifficultyToGameSettings } from "./constants";
+import { mineLocationsReducer } from "./reducers/mineLocationsReducer";
 
 export default function App() {
 
+  const [mineLocations, dispatchMineLocations] = useReducer(mineLocationsReducer, []);
   const [minesRemaining, dispatchMinesRemaining] = useReducer(minesRemainingReducer, 40);
 
   const [Width, setWidth] = useState(16);
@@ -15,8 +18,6 @@ export default function App() {
   const [TotalNumberOfMines, setTotalNumberOfMines] = useState(40);
   // Keep track of which boxes have been opened. Used to check if the game is won
   const [BoxesClicked, setBoxesClicked] = useState(new Set());
-  // Is set at the beginning of the game and remains constant
-  const [MineLocations, setMineLocations] = useState([]);
   // Either NOT_STARTED, IN_PROGRESS, WON, or LOST. Used to see if the game is in progress
   const [gameResult, setGameResult] = useState(gameStatus.NOT_STARTED);
 
@@ -28,7 +29,7 @@ export default function App() {
   const resetHandler = () => {
       setGameResult(gameStatus.NOT_STARTED)
       setMinesRemaining(dispatchMinesRemaining, TotalNumberOfMines)
-      setMineLocations([])
+      resetMineLocations(dispatchMineLocations);
       setBoxesClicked(new Set())
       setNumberOfMineNeighborsByBoxId({})
   }
@@ -37,7 +38,7 @@ export default function App() {
     setGameResult(gameStatus.NOT_STARTED)
     setMinesRemaining(dispatchMinesRemaining, mapDifficultyToGameSettings[e.target.value]['_totalNumberOfMines'])
     setTotalNumberOfMines(mapDifficultyToGameSettings[e.target.value]['_totalNumberOfMines'])
-    setMineLocations([])
+    resetMineLocations(dispatchMineLocations)
     setBoxesClicked(new Set())
     setNumberOfMineNeighborsByBoxId({})
     setWidth(mapDifficultyToGameSettings[e.target.value]['_width'])
@@ -49,6 +50,8 @@ export default function App() {
       <h1 id='MinesweeperHeader'>Minesweeper</h1>
         <MinesRemainingContext.Provider value={minesRemaining} >
           <MinesRemainingDispatchContext.Provider value={dispatchMinesRemaining}>
+            <MineLocationsContext.Provider value={mineLocations} >
+              <MineLocationsDispatchContext.Provider value={dispatchMineLocations} >
             <div className="Game">
               <Header
                 resetHandler={resetHandler}
@@ -60,15 +63,15 @@ export default function App() {
                 Height={Height}
                 TotalNumberOfMines={TotalNumberOfMines}
                 BoxesClicked={BoxesClicked}
-                MineLocations={MineLocations}
                 gameResult={gameResult}
                 numberOfMineNeighborsByBoxId={numberOfMineNeighborsByBoxId}
                 setBoxesClicked={setBoxesClicked}
-                setMineLocations={setMineLocations}
                 setGameResult={setGameResult}
                 setNumberOfMineNeighborsByBoxId={setNumberOfMineNeighborsByBoxId}
               />
             </div>
+            </MineLocationsDispatchContext.Provider>
+            </MineLocationsContext.Provider>
           </MinesRemainingDispatchContext.Provider>
         </MinesRemainingContext.Provider>
     </div>

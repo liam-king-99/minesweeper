@@ -1,12 +1,13 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { 
+    MineLocationsContext,
     MinesRemainingDispatchContext
 } from '../contexts';
 import './Box.css'
 import { incrementMinesRemaining, decrementMinesReamining } from '../reducers/minesRemainingReducer';
 import { gameStatus } from '../constants';
 
-function Box({Id, MineLocations, MineNeighbors, HandleBoardClick, IsClicked, SetGameLose, GetGameResult, TotalNumberOfMines}) {
+function Box({Id, MineNeighbors, HandleBoardClick, IsClicked, SetGameLose, GetGameResult, TotalNumberOfMines}) {
 
     const UNCLICKED = 0;
     const CLICKED = 1;
@@ -14,6 +15,7 @@ function Box({Id, MineLocations, MineNeighbors, HandleBoardClick, IsClicked, Set
 
     const boxRef = useRef(null);
 
+    const MineLocations = useContext(MineLocationsContext);
     const dispatchMinesRemaining = useContext(MinesRemainingDispatchContext);
 
     const [status, setStatus] = useState(IsClicked);

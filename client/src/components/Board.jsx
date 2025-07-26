@@ -1,6 +1,8 @@
-import { useCallback } from 'react';
+import { useCallback, useContext } from 'react';
 import Box from './Box';
 import { gameStatus } from '../constants';
+import { MineLocationsContext, MineLocationsDispatchContext, MinesRemainingContext } from '../contexts';
+import { setMineLocations } from '../reducers/mineLocationsReducer';
 
 function Board({
     Width,
@@ -9,15 +11,16 @@ function Board({
     BoxesClicked,
     gameResult,
     numberOfMineNeighborsByBoxId,
-    MineLocations,
     setBoxesClicked,
     setGameResult,
     setNumberOfMineNeighborsByBoxId,
-    setMineLocations
 }) {
 
     const UNCLICKED = 0;
     const CLICKED = 1;
+
+    const MineLocations = useContext(MineLocationsContext);
+    const dispatchMineLocations = useContext(MineLocationsDispatchContext);
 
     // Called by a box if a mine is clicked on
     const setGameLose = useCallback(() => {
@@ -156,8 +159,8 @@ function Board({
                 }
             }
         }
+        setMineLocations(dispatchMineLocations, templateMineLocations);
         setNumberOfMineNeighborsByBoxId(templateNumberOfMineNeighborsByBoxId)
-        setMineLocations(templateMineLocations)
     }
 
     return (
@@ -179,7 +182,6 @@ function Board({
                                 const mineNeighbors = gameResult === gameStatus.NOT_STARTED ? 0 : numberOfMineNeighborsByBoxId[boxId] ?? 0
                                 gameBoard.push(<div id={boxId}>
                                                     <Box Id={boxId} 
-                                                        MineLocations={MineLocations} 
                                                         MineNeighbors={mineNeighbors} 
                                                         HandleBoardClick={handleBoardClick} 
                                                         IsClicked={isClicked}
