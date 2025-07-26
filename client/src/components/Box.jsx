@@ -13,7 +13,6 @@ function Box({Id, MineNeighbors, HandleBoardClick, IsClicked, SetGameLose, Total
     const CLICKED = 1;
     const FLAGGED = 2;
 
-    const boxRef = useRef(null);
 
     const MineLocations = useContext(MineLocationsContext);
     const dispatchMinesRemaining = useContext(MinesRemainingDispatchContext);
@@ -30,18 +29,16 @@ function Box({Id, MineNeighbors, HandleBoardClick, IsClicked, SetGameLose, Total
         setStatus(IsClicked)
     }, [MineLocations, MineNeighbors, IsClicked, TotalNumberOfMines])
 
-    const handleClick = (id) => {
-        if (gameResult === gameStatus.IN_PROGRESS || gameResult === gameStatus.NOT_STARTED)
+    const isGameInProgress = gameResult === gameStatus.IN_PROGRESS || gameResult === gameStatus.NOT_STARTED
+
+    const handleClick = () => {
+        setStatus(CLICKED);
+        if (isMine)
         {
-            setStatus(CLICKED);
-            if (isMine)
-            {
-                SetGameLose();
-                return
-            }
-            HandleBoardClick(id);
+            SetGameLose();
+            return
         }
-        
+        HandleBoardClick(Id);
     }
 
     const handleRightClick = (event) => {
@@ -66,9 +63,8 @@ function Box({Id, MineNeighbors, HandleBoardClick, IsClicked, SetGameLose, Total
         case UNCLICKED:
             return (
                 <div 
-                    ref={boxRef}
                     className="unopened-box box"
-                    id={Id} onClick={() => handleClick(Id)}
+                    id={Id} onClick={isGameInProgress ? handleClick : undefined}
                     onContextMenu={handleRightClick}
                 />
             );
