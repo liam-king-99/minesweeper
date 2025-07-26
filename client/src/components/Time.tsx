@@ -1,12 +1,16 @@
 import { useEffect, useState } from 'react';
 
+export interface TimeProps {
+  gameStarted: boolean,
+  gameOver: boolean
+}
 
-const Time = ({gameStarted, gameOver}) => 
+const Time = ({gameStarted, gameOver}: TimeProps) => 
 {
     const [secondsPassed, setSecondsPassed] = useState(0);
 
     useEffect(() => {
-        let interval = null;
+        let interval = undefined;
         if (!gameStarted && !gameOver) {
           setSecondsPassed(0)
         }
