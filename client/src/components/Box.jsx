@@ -7,7 +7,7 @@ import './Box.css'
 import { incrementMinesRemaining, decrementMinesReamining } from '../reducers/minesRemainingReducer';
 import { gameStatus } from '../constants';
 
-function Box({Id, MineNeighbors, HandleBoardClick, IsClicked, SetGameLose, GetGameResult, TotalNumberOfMines}) {
+function Box({Id, MineNeighbors, HandleBoardClick, IsClicked, SetGameLose, TotalNumberOfMines, gameResult}) {
 
     const UNCLICKED = 0;
     const CLICKED = 1;
@@ -31,7 +31,7 @@ function Box({Id, MineNeighbors, HandleBoardClick, IsClicked, SetGameLose, GetGa
     }, [MineLocations, MineNeighbors, IsClicked, TotalNumberOfMines])
 
     const handleClick = (id) => {
-        if (GetGameResult() === gameStatus.IN_PROGRESS || GetGameResult() === gameStatus.NOT_STARTED)
+        if (gameResult === gameStatus.IN_PROGRESS || gameResult === gameStatus.NOT_STARTED)
         {
             setStatus(CLICKED);
             if (isMine)
@@ -46,7 +46,7 @@ function Box({Id, MineNeighbors, HandleBoardClick, IsClicked, SetGameLose, GetGa
 
     const handleRightClick = (event) => {
         event.preventDefault();
-        if (GetGameResult() === gameStatus.IN_PROGRESS)
+        if (gameResult === gameStatus.IN_PROGRESS)
         {
             if (status === FLAGGED)
                 {

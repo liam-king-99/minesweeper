@@ -27,11 +27,6 @@ function Board({
         setGameResult(gameStatus.LOST);
     }, [])
 
-    // Called by a box to see if the game is over yet
-    const getGameResult = useCallback(() => {
-        return gameResult;
-    }, [gameResult])
-
     // Called when a box that touches no mines is clicked. Returns an array of all of the boxes that 
     // should be opened as a result
     const getAllBoxesToOpenOnCascade = (id) => 
@@ -186,8 +181,8 @@ function Board({
                                                         HandleBoardClick={handleBoardClick} 
                                                         IsClicked={isClicked}
                                                         SetGameLose={setGameLose}
-                                                        GetGameResult={getGameResult}
                                                         TotalNumberOfMines={TotalNumberOfMines}
+                                                        gameResult={gameResult}
                                                     />
                                                 </div>);
                             })
