@@ -3,8 +3,15 @@ import FlagCount from './FlagCount';
 import './Board.css'
 import Time from './Time';
 import FormAndReset from './FormAndReset';
+import type { ChangeEvent } from 'react';
 
-const Header = ({ resetHandler, formChangeHandler, gameResult }) => 
+export interface HeaderProps {
+    resetHandler: () => void,
+    formChangeHandler: (e: ChangeEvent<HTMLSelectElement>) => void,
+    gameResult: Number
+}
+
+const Header = ({ resetHandler, formChangeHandler, gameResult }: HeaderProps) => 
 {
 
     return (
