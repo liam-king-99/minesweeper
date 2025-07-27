@@ -3,10 +3,11 @@ import FlagCount from './FlagCount';
 import './Board.css'
 import Time from './Time';
 import FormAndReset from './FormAndReset';
+import type { ChangeEvent } from 'react';
 
 export interface HeaderProps {
     resetHandler: () => void,
-    formChangeHandler: () => void,
+    formChangeHandler: (e: ChangeEvent<HTMLSelectElement>) => void,
     gameResult: Number
 }
 

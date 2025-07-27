@@ -6,10 +6,10 @@ export interface MinesRemainingAction {
     maxNumberOfMines?: number
 }
 
-export function minesRemainingReducer(minesRemaining: number, action: MinesRemainingAction) {
+export function minesRemainingReducer(minesRemaining: number, action: MinesRemainingAction): number {
     switch (action.type) {
         case 'set': {
-            return action.value;
+            return action.value!;
         }
         case 'increment': {
             return Math.min(minesRemaining + 1, action.maxNumberOfMines!);

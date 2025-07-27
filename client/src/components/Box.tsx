@@ -1,4 +1,4 @@
-import { type Context, type Dispatch, type MouseEvent, useContext, useEffect, useState } from 'react';
+import { type Dispatch, type MouseEvent, useContext, useEffect, useState } from 'react';
 import { 
     MineLocationsContext,
     MinesRemainingDispatchContext

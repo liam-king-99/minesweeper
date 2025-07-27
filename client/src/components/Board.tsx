@@ -1,9 +1,19 @@
-import { useCallback, useContext } from 'react';
+import { useCallback, useContext, type ReactElement } from 'react';
 import Box from './Box';
 import { gameStatus } from '../constants';
 import { BoxesClickedContext, BoxesClickedDispatchContext, MineLocationsContext, MineLocationsDispatchContext } from '../contexts';
 import { setMineLocations } from '../reducers/mineLocationsReducer';
 import { addManyBoxes, addOneBox } from '../reducers/boxesClickedReducer';
+
+export interface BoardProps {
+    Width: number,
+    Height: number,
+    TotalNumberOfMines: number,
+    gameResult: number,
+    numberOfMineNeighborsByBoxId: {[key: number]: number},
+    setGameResult: React.Dispatch<React.SetStateAction<number>>,
+    setNumberOfMineNeighborsByBoxId: React.Dispatch<React.SetStateAction<{}>>
+}
 
 function Board({
     Width,
@@ -13,7 +23,7 @@ function Board({
     numberOfMineNeighborsByBoxId,
     setGameResult,
     setNumberOfMineNeighborsByBoxId,
-}) {
+}: BoardProps) {
 
     const UNCLICKED = 0;
     const CLICKED = 1;
@@ -36,10 +46,10 @@ function Board({
 
     // Called when a box that touches no mines is clicked. Returns an array of all of the boxes that 
     // should be opened as a result
-    const getAllBoxesToOpenOnCascade = (id, NumberOfMineNeighborsByBoxId=numberOfMineNeighborsByBoxId) => 
+    const getAllBoxesToOpenOnCascade = (id: number, NumberOfMineNeighborsByBoxId=numberOfMineNeighborsByBoxId): Set<number> => 
     {
-        let setOfBoxIds = new Set()
-        const getAllBoxesToOpenOnCascadeHelper = (id) =>
+        let setOfBoxIds = new Set<number>()
+        const getAllBoxesToOpenOnCascadeHelper = (id: number) =>
         {
             if (!setOfBoxIds.has(id))
             {
@@ -59,7 +69,7 @@ function Board({
     }
 
     // Update clicks and boxes that have been opened. Only called on on a left click of an unopened box
-    const handleBoardClick = (id) => {
+    const handleBoardClick = (id: number) => {
         if (gameResult === gameStatus.NOT_STARTED)
         {
             setGameResult(gameStatus.IN_PROGRESS)
@@ -77,7 +87,7 @@ function Board({
     }
 
     // Called when a box is opened automatically. Uses getAllBoxesToOpenOnCascade
-    const clickOnBox = (id, NumberOfMineNeighborsByBoxId=numberOfMineNeighborsByBoxId) => {
+    const clickOnBox = (id: number, NumberOfMineNeighborsByBoxId=numberOfMineNeighborsByBoxId) => {
         if (NumberOfMineNeighborsByBoxId[id] === undefined)
         {
             const boxesToOpenOnCascade = getAllBoxesToOpenOnCascade(id, NumberOfMineNeighborsByBoxId)
@@ -90,7 +100,7 @@ function Board({
         }
     }
 
-    const getAdjacentBoxes = (firstClickId, height, width) => {
+    const getAdjacentBoxes = (firstClickId: number, height: number, width: number) => {
         const row = Math.floor(firstClickId / width);
         const col = firstClickId % width;
         let adjacentBoxes = [];
@@ -111,10 +121,10 @@ function Board({
     }
 
     // Called after the first click. Ensures that the first box to open won't be a mine
-    const placeMines = (firstClickId) => {
+    const placeMines = (firstClickId: number) => {
         const firstClickAdjacentBoxes = getAdjacentBoxes(firstClickId, Height, Width);
-        const templateMineLocations = []
-        let templateNumberOfMineNeighborsByBoxId = {}
+        const templateMineLocations: number[] = []
+        let templateNumberOfMineNeighborsByBoxId: {[key: number]: number} = {}
         if (gameResult === gameStatus.NOT_STARTED && MineLocations.length < TotalNumberOfMines)
         {
             // First click happened. Generate mine locations such that first click is protected
@@ -150,7 +160,7 @@ function Board({
         <div>
             <div className="Table" style={{display: 'grid', gridTemplateColumns: `repeat(${Width}, 38px)`, gridTemplateRows: `repeat(${Height}, 38px)`}}>
                 {(() => {
-                    const gameBoard = [];
+                    const gameBoard: ReactElement[] = [];
                     Array.from({length: Height}, (_, _height) =>
                         {
                             Array.from({length: Width}, (_, _width) => 
@@ -158,7 +168,7 @@ function Board({
                                 const boxId = _height*Width + _width;
                                 const isClicked = boxesClicked.has(boxId) ? CLICKED : UNCLICKED
                                 const mineNeighbors = gameResult === gameStatus.NOT_STARTED ? 0 : numberOfMineNeighborsByBoxId[boxId] ?? 0
-                                gameBoard.push(<div id={boxId}>
+                                gameBoard.push(<div id={`${boxId}`}>
                                                     <Box Id={boxId} 
                                                         MineNeighbors={mineNeighbors} 
                                                         HandleBoardClick={handleBoardClick} 

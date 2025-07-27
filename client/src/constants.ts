@@ -5,20 +5,28 @@ export const gameStatus = {
     NOT_STARTED: 2
 };
 
+export type difficultyOption = 'Beginner' | 'Intermediate' | 'Expert';
+
+export interface gameSettings {
+    totalNumberOfMines: number,
+    width: number,
+    height: number
+}
+
 export const mapDifficultyToGameSettings = {
     "Beginner": {
-        _totalNumberOfMines: 10,
-        _width: 9,
-        _height: 9,
+        totalNumberOfMines: 10,
+        width: 9,
+        height: 9,
     },
     "Intermediate": {
-        _totalNumberOfMines: 40,
-        _width: 16,
-        _height: 16,
+        totalNumberOfMines: 40,
+        width: 16,
+        height: 16,
     },
     "Expert": {
-        _totalNumberOfMines: 99,
-        _width: 30,
-        _height: 16,
+        totalNumberOfMines: 99,
+        width: 30,
+        height: 16,
     }
 }

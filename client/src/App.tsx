@@ -3,16 +3,16 @@ import { BoxesClickedContext, BoxesClickedDispatchContext, MineLocationsContext,
 import { minesRemainingReducer, setMinesRemaining } from "./reducers/minesRemainingReducer";
 import { resetMineLocations } from "./reducers/mineLocationsReducer";
 import './App.css'
-import { useReducer, useState } from "react";
+import { type ChangeEvent, type ChangeEventHandler, useReducer, useState } from "react";
 import Header from "./components/Header";
-import { gameStatus, mapDifficultyToGameSettings } from "./constants";
+import { type difficultyOption, type gameSettings, gameStatus, mapDifficultyToGameSettings } from "./constants";
 import { mineLocationsReducer } from "./reducers/mineLocationsReducer";
 import { boxesClickedReducer, resetBoxesClicked } from "./reducers/boxesClickedReducer";
 
 export default function App() {
 
-  const [boxesClicked, dispatchBoxesClicked] = useReducer(boxesClickedReducer, new Set())
-  const [mineLocations, dispatchMineLocations] = useReducer(mineLocationsReducer, []);
+  const [boxesClicked, dispatchBoxesClicked] = useReducer(boxesClickedReducer, new Set<number>())
+  const [mineLocations, dispatchMineLocations] = useReducer(mineLocationsReducer, [] as number[]);
   const [minesRemaining, dispatchMinesRemaining] = useReducer(minesRemainingReducer, 40);
 
   const [Width, setWidth] = useState(16);
@@ -34,15 +34,17 @@ export default function App() {
       setNumberOfMineNeighborsByBoxId({})
   }
 
-  const formChangeHandler = (e) => {
+  const formChangeHandler: ChangeEventHandler<HTMLSelectElement> = (e: ChangeEvent<HTMLSelectElement>) => {
     setGameResult(gameStatus.NOT_STARTED)
-    setMinesRemaining(dispatchMinesRemaining, mapDifficultyToGameSettings[e.target.value]['_totalNumberOfMines'])
-    setTotalNumberOfMines(mapDifficultyToGameSettings[e.target.value]['_totalNumberOfMines'])
+    const difficultySetting = (e.target.value) as difficultyOption;
+    const chosenGameSettings: gameSettings = mapDifficultyToGameSettings[difficultySetting];
+    setMinesRemaining(dispatchMinesRemaining, chosenGameSettings.totalNumberOfMines)
+    setTotalNumberOfMines(chosenGameSettings.totalNumberOfMines)
     resetMineLocations(dispatchMineLocations)
     resetBoxesClicked(dispatchBoxesClicked);
     setNumberOfMineNeighborsByBoxId({})
-    setWidth(mapDifficultyToGameSettings[e.target.value]['_width'])
-    setHeight(mapDifficultyToGameSettings[e.target.value]['_height'])
+    setWidth(chosenGameSettings.width)
+    setHeight(chosenGameSettings.height)
 }
 
   return (
