@@ -24,10 +24,12 @@
     "web-vitals": "^1.1.2"
   },
   "scripts": {
-  "start": "vite",
-  "build": "vite build",
-  "serve": "vite preview"
-},
+    "start": "vite --port 3000",
+    "build": "vite build",
+    "serve": "vite preview",
+    "format": "prettier",
+    "check": "prettier --write . && eslint --fix"
+  },
   "proxy": "http://localhost:3001",
   "eslintConfig": {
     "extends": [
@@ -48,8 +50,11 @@
     ]
   },
   "devDependencies": {
+    "@tanstack/eslint-config": "^0.3.0",
     "@vitejs/plugin-react": "^4.7.0",
+    "eslint": "^9.32.0",
     "gh-pages": "^5.0.0",
+    "prettier": "^3.6.2",
     "vite": "^7.0.6"
   }
 }
